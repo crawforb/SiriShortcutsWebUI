@@ -1,1 +1,582 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Select date and time</title>
+<style>
+  * {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  }
 
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #f2f2f7;
+    color: #111827;
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px 20px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .page-header {
+    text-align: center;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .page-title {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .page-subtitle {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  .sections {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .section-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #9ca3af;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 12px 12px 14px 12px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+  }
+
+  /* Inputs */
+
+  .input-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .input-field {
+    width: 100%;
+    height: 40px;
+    border-radius: 999px;
+    border: 1px solid #d1d5db;
+    padding: 0 14px;
+    font-size: 15px;
+    background: #f9fafb;
+  }
+
+  .input-inline {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 8px;
+  }
+
+  /* Calendar */
+
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .cal-nav-btn {
+    border: none;
+    background: #e5e7eb;
+    border-radius: 999px;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cal-nav-btn:active {
+    background: #d1d5db;
+  }
+
+  .month-label {
+    font-weight: 600;
+    font-size: 18px;
+  }
+
+  .weekday-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    color: #9ca3af;
+    text-align: center;
+  }
+
+  .weekday {
+    padding: 2px 0;
+  }
+
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+
+  .day-btn {
+    border: none;
+    border-radius: 999px;
+    height: 40px;
+    font-size: 14px;
+    background: #f3f4f6;
+    color: #111827;
+  }
+
+  .day-btn.empty {
+    visibility: hidden;
+  }
+
+  .day-btn.selected {
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  .day-btn.today:not(.selected) {
+    border: 1px solid #3b82f6;
+  }
+
+  /* Grids */
+
+  .grid-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 12px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+  }
+
+  .grid-4x3 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .pill-btn {
+    border: none;
+    border-radius: 999px;
+    height: 44px;
+    font-size: 16px;
+    background: #f3f4f6;
+    color: #111827;
+  }
+
+  .pill-btn.selected {
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  /* Footer */
+
+  .footer {
+    margin-top: 6px;
+    padding-top: 8px;
+  }
+
+  .confirm-btn {
+    width: 100%;
+    border-radius: 999px;
+    border: none;
+    height: 50px;
+    font-size: 17px;
+    font-weight: 600;
+    background: #111827;
+    color: #f9fafb;
+  }
+
+  .confirm-btn:disabled {
+    opacity: 0.4;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 6px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="page-header">
+      <div class="page-title">New calendar event</div>
+      <div class="page-subtitle">Set title, duration, date, and time.</div>
+    </div>
+
+    <div class="sections">
+
+      <!-- TITLE + DURATION -->
+      <div class="section">
+        <div class="section-label">Details</div>
+        <div class="card">
+          <div class="input-row">
+            <input id="titleInput" class="input-field" type="text" placeholder="Event title">
+            <div class="input-inline">
+              <input id="durationInput" class="input-field" type="number" min="0.25" step="0.25" placeholder="Duration (hours)">
+              <div style="display:flex;align-items:center;font-size:13px;color:#6b7280;padding-left:4px;">
+                hrs
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DATE -->
+      <div class="section">
+        <div class="section-label">Date</div>
+        <div class="card">
+          <div class="calendar-header">
+            <button id="prevMonth" class="cal-nav-btn" type="button">&#x2039;</button>
+            <div id="monthLabel" class="month-label"></div>
+            <button id="nextMonth" class="cal-nav-btn" type="button">&#x203A;</button>
+          </div>
+          <div class="weekday-row">
+            <div class="weekday">Sun</div>
+            <div class="weekday">Mon</div>
+            <div class="weekday">Tue</div>
+            <div class="weekday">Wed</div>
+            <div class="weekday">Thu</div>
+            <div class="weekday">Fri</div>
+            <div class="weekday">Sat</div>
+          </div>
+          <div id="daysGrid" class="days-grid"></div>
+        </div>
+      </div>
+
+      <!-- HOUR -->
+      <div class="section">
+        <div class="section-label">Hour</div>
+        <div class="grid-card">
+          <div id="hoursGrid" class="grid-4x3"></div>
+        </div>
+      </div>
+
+      <!-- MINUTES -->
+      <div class="section">
+        <div class="section-label">Minutes</div>
+        <div class="grid-card">
+          <div id="minutesGrid" class="grid-4"></div>
+        </div>
+      </div>
+
+      <!-- AM / PM -->
+      <div class="section">
+        <div class="section-label">AM / PM</div>
+        <div class="grid-card">
+          <div id="ampmGrid" class="grid-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <button id="confirmBtn" class="confirm-btn" type="button" disabled>Create event</button>
+      <div class="hint">Fill in title, duration, date, hour, minutes, and AM or PM.</div>
+    </div>
+  </div>
+
+  <script>
+    var monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+    var today = new Date();
+    var currentMonth = today.getMonth();
+    var currentYear = today.getFullYear();
+
+    var selectedYear = currentYear;
+    var selectedMonth = currentMonth;
+    var selectedDay = today.getDate();
+    var selectedHour = null;
+    var selectedMinutes = null;
+    var selectedAmPm = null;
+
+    var daysGrid = document.getElementById("daysGrid");
+    var monthLabel = document.getElementById("monthLabel");
+    var confirmBtn = document.getElementById("confirmBtn");
+
+    function renderCalendar() {
+      monthLabel.textContent = monthNames[currentMonth] + " " + currentYear;
+      daysGrid.innerHTML = "";
+
+      var firstDay = new Date(currentYear, currentMonth, 1);
+      var startingWeekday = firstDay.getDay();
+      var daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+      for (var i = 0; i < startingWeekday; i++) {
+        var empty = document.createElement("button");
+        empty.className = "day-btn empty";
+        empty.disabled = true;
+        daysGrid.appendChild(empty);
+      }
+
+      for (var d = 1; d <= daysInMonth; d++) {
+        var btn = document.createElement("button");
+        btn.className = "day-btn";
+        btn.textContent = String(d);
+        btn.dataset.day = String(d);
+
+        if (d === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+          btn.classList.add("today");
+        }
+
+        if (d === selectedDay && currentMonth === selectedMonth && currentYear === selectedYear) {
+          btn.classList.add("selected");
+        }
+
+        btn.addEventListener("click", function(e) {
+          var day = parseInt(e.currentTarget.dataset.day);
+          selectedDay = day;
+          selectedMonth = currentMonth;
+          selectedYear = currentYear;
+          updateDaySelection();
+          updateConfirmState();
+        });
+
+        daysGrid.appendChild(btn);
+      }
+    }
+
+    function updateDaySelection() {
+      var buttons = daysGrid.querySelectorAll(".day-btn");
+      buttons.forEach(function(b) {
+        if (b.classList.contains("empty")) return;
+        var d = parseInt(b.dataset.day);
+        if (d === selectedDay && currentMonth === selectedMonth && currentYear === selectedYear) {
+          b.classList.add("selected");
+        } else {
+          b.classList.remove("selected");
+        }
+      });
+    }
+
+    document.getElementById("prevMonth").addEventListener("click", function() {
+      currentMonth -= 1;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear -= 1;
+      }
+      renderCalendar();
+      updateConfirmState();
+    });
+
+    document.getElementById("nextMonth").addEventListener("click", function() {
+      currentMonth += 1;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear += 1;
+      }
+      renderCalendar();
+      updateConfirmState();
+    });
+
+    var hoursGrid = document.getElementById("hoursGrid");
+    function buildHours() {
+      hoursGrid.innerHTML = "";
+      for (var h = 1; h <= 12; h++) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "pill-btn";
+        btn.textContent = String(h);
+        btn.dataset.hour = String(h);
+        if (selectedHour === h) btn.classList.add("selected");
+        btn.addEventListener("click", function(e) {
+          var hour = parseInt(e.currentTarget.dataset.hour);
+          selectedHour = hour;
+          updateHourSelection();
+          updateConfirmState();
+        });
+        hoursGrid.appendChild(btn);
+      }
+    }
+    function updateHourSelection() {
+      var buttons = hoursGrid.querySelectorAll(".pill-btn");
+      buttons.forEach(function(b) {
+        var h = parseInt(b.dataset.hour);
+        if (h === selectedHour) {
+          b.classList.add("selected");
+        } else {
+          b.classList.remove("selected");
+        }
+      });
+    }
+
+    var minutesGrid = document.getElementById("minutesGrid");
+    var minuteOptions = [0, 15, 30, 45];
+    function buildMinutes() {
+      minutesGrid.innerHTML = "";
+      minuteOptions.forEach(function(m) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "pill-btn";
+        var label = (m === 0 ? "00" : String(m));
+        btn.textContent = label;
+        btn.dataset.min = String(m);
+        if (selectedMinutes === m) btn.classList.add("selected");
+        btn.addEventListener("click", function(e) {
+          var mins = parseInt(e.currentTarget.dataset.min);
+          selectedMinutes = mins;
+          updateMinuteSelection();
+          updateConfirmState();
+        });
+        minutesGrid.appendChild(btn);
+      });
+    }
+    function updateMinuteSelection() {
+      var buttons = minutesGrid.querySelectorAll(".pill-btn");
+      buttons.forEach(function(b) {
+        var mins = parseInt(b.dataset.min);
+        if (mins === selectedMinutes) {
+          b.classList.add("selected");
+        } else {
+          b.classList.remove("selected");
+        }
+      });
+    }
+
+    var ampmGrid = document.getElementById("ampmGrid");
+    function buildAmPm() {
+      ampmGrid.innerHTML = "";
+      ["AM","PM"].forEach(function(period) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "pill-btn";
+        btn.textContent = period;
+        btn.dataset.period = period;
+        if (selectedAmPm === period) btn.classList.add("selected");
+        btn.addEventListener("click", function(e) {
+          selectedAmPm = e.currentTarget.dataset.period;
+          updateAmPmSelection();
+          updateConfirmState();
+        });
+        ampmGrid.appendChild(btn);
+      });
+    }
+    function updateAmPmSelection() {
+      var buttons = ampmGrid.querySelectorAll(".pill-btn");
+      buttons.forEach(function(b) {
+        if (b.dataset.period === selectedAmPm) {
+          b.classList.add("selected");
+        } else {
+          b.classList.remove("selected");
+        }
+      });
+    }
+
+    function hasTextValue(id) {
+      var el = document.getElementById(id);
+      if (!el) return false;
+      return el.value.trim().length > 0;
+    }
+
+    function updateConfirmState() {
+      var hasDate = selectedYear != null && selectedMonth != null && selectedDay != null;
+      var hasHour = selectedHour != null;
+      var hasMin = selectedMinutes != null;
+      var hasPeriod = selectedAmPm != null;
+      var hasTitle = hasTextValue("titleInput");
+      var hasDuration = hasTextValue("durationInput");
+      confirmBtn.disabled = !(hasDate && hasHour && hasMin && hasPeriod && hasTitle && hasDuration);
+    }
+
+    document.getElementById("titleInput").addEventListener("input", updateConfirmState);
+    document.getElementById("durationInput").addEventListener("input", updateConfirmState);
+
+    document.getElementById("confirmBtn").addEventListener("click", function() {
+      if (confirmBtn.disabled) return;
+
+      var title = document.getElementById("titleInput").value.trim();
+      var durationStr = document.getElementById("durationInput").value.trim();
+      var durationHours = parseFloat(durationStr);
+      if (!durationHours || durationHours <= 0) {
+        alert("Enter a valid duration in hours.");
+        return;
+      }
+
+      var hour12 = selectedHour;
+      var hour24 = hour12;
+      if (selectedAmPm === "AM") {
+        if (hour12 === 12) hour24 = 0;
+      } else {
+        if (hour12 !== 12) hour24 = hour12 + 12;
+      }
+
+      var payload = {
+        title: title,
+        durationHours: durationHours,
+        year: selectedYear,
+        month: selectedMonth,
+        day: selectedDay,
+        hour: hour24,
+        minute: selectedMinutes
+      };
+
+      var json = JSON.stringify(payload);
+      var encoded = encodeURIComponent(json);
+
+      // IMPORTANT: change the shortcut name here to match your Shortcut
+      var shortcutName = "Create Calendar Event";
+
+      window.location.href =
+        "shortcuts://run-shortcut?name=" +
+        encodeURIComponent(shortcutName) +
+        "&input=" + encoded;
+    });
+
+    renderCalendar();
+    buildHours();
+    buildMinutes();
+    buildAmPm();
+    updateConfirmState();
+  </script>
+</body>
+</html>
