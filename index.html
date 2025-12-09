@@ -1,582 +1,774 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Select date and time</title>
-<style>
-  * {
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Date & Time Picker</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  html, body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    background: #f2f2f7;
-    color: #111827;
-  }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
 
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: stretch;
-  }
+    .picker-container {
+      width: 100%;
+      max-width: 380px;
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
 
-  .page {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 16px 20px 20px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
+    /* Header showing selected date/time */
+    .picker-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 24px 20px;
+      text-align: center;
+    }
 
-  .page-header {
-    text-align: center;
-    padding-top: 4px;
-    padding-bottom: 4px;
-  }
+    .selected-display {
+      font-size: 14px;
+      opacity: 0.85;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
 
-  .page-title {
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-  }
+    .selected-value {
+      font-size: 28px;
+      font-weight: 600;
+      min-height: 36px;
+    }
 
-  .page-subtitle {
-    margin-top: 4px;
-    font-size: 13px;
-    color: #6b7280;
-  }
+    .selected-time {
+      font-size: 20px;
+      margin-top: 4px;
+      opacity: 0.9;
+      min-height: 26px;
+    }
 
-  .sections {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
+    /* Step indicator */
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 20px 8px;
+    }
 
-  .section {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      transition: all 0.3s ease;
+    }
 
-  .section-label {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: #9ca3af;
-  }
+    .step-dot.active {
+      background: #667eea;
+      transform: scale(1.2);
+    }
 
-  .card {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 12px 12px 14px 12px;
-    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
-  }
+    .step-dot.completed {
+      background: #4ade80;
+    }
 
-  /* Inputs */
+    /* Main content area */
+    .picker-content {
+      padding: 12px 16px 20px;
+      position: relative;
+      min-height: 340px;
+    }
 
-  .input-row {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+    /* Step panels */
+    .step-panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
 
-  .input-field {
-    width: 100%;
-    height: 40px;
-    border-radius: 999px;
-    border: 1px solid #d1d5db;
-    padding: 0 14px;
-    font-size: 15px;
-    background: #f9fafb;
-  }
+    .step-panel.active {
+      display: block;
+    }
 
-  .input-inline {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 8px;
-  }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-  /* Calendar */
+    .step-title {
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 16px;
+    }
 
-  .calendar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 6px;
-  }
+    /* Calendar styles */
+    .calendar-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
 
-  .cal-nav-btn {
-    border: none;
-    background: #e5e7eb;
-    border-radius: 999px;
-    width: 32px;
-    height: 32px;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+    .nav-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: #f3f4f6;
+      border-radius: 12px;
+      font-size: 18px;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  .cal-nav-btn:active {
-    background: #d1d5db;
-  }
+    .nav-btn:hover {
+      background: #e5e7eb;
+    }
 
-  .month-label {
-    font-weight: 600;
-    font-size: 18px;
-  }
+    .nav-btn:active {
+      transform: scale(0.95);
+    }
 
-  .weekday-row {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    margin-bottom: 4px;
-    font-size: 11px;
-    color: #9ca3af;
-    text-align: center;
-  }
+    .month-year {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1f2937;
+    }
 
-  .weekday {
-    padding: 2px 0;
-  }
+    .weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 8px;
+    }
 
-  .days-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
-  }
+    .weekday {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 500;
+      color: #9ca3af;
+      padding: 8px 0;
+    }
 
-  .day-btn {
-    border: none;
-    border-radius: 999px;
-    height: 40px;
-    font-size: 14px;
-    background: #f3f4f6;
-    color: #111827;
-  }
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
 
-  .day-btn.empty {
-    visibility: hidden;
-  }
+    .day-cell {
+      aspect-ratio: 1;
+      border: none;
+      background: transparent;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  .day-btn.selected {
-    background: #2563eb;
-    color: #ffffff;
-    font-weight: 600;
-  }
+    .day-cell:hover:not(.empty):not(.selected) {
+      background: #f3f4f6;
+    }
 
-  .day-btn.today:not(.selected) {
-    border: 1px solid #3b82f6;
-  }
+    .day-cell:active:not(.empty) {
+      transform: scale(0.92);
+    }
 
-  /* Grids */
+    .day-cell.empty {
+      visibility: hidden;
+    }
 
-  .grid-card {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 12px;
-    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
-  }
+    .day-cell.today:not(.selected) {
+      border: 2px solid #667eea;
+      color: #667eea;
+    }
 
-  .grid-4x3 {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-  }
+    .day-cell.selected {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      font-weight: 600;
+    }
 
-  .grid-4 {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-  }
+    .day-cell.past {
+      color: #d1d5db;
+    }
 
-  .grid-2 {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
+    /* Hour grid - 4x3 layout */
+    .hour-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 8px 0;
+    }
 
-  .pill-btn {
-    border: none;
-    border-radius: 999px;
-    height: 44px;
-    font-size: 16px;
-    background: #f3f4f6;
-    color: #111827;
-  }
+    .hour-btn {
+      height: 56px;
+      border: none;
+      background: #f3f4f6;
+      border-radius: 14px;
+      font-size: 20px;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
 
-  .pill-btn.selected {
-    background: #2563eb;
-    color: #ffffff;
-    font-weight: 600;
-  }
+    .hour-btn:hover {
+      background: #e5e7eb;
+      transform: translateY(-2px);
+    }
 
-  /* Footer */
+    .hour-btn:active {
+      transform: scale(0.95);
+    }
 
-  .footer {
-    margin-top: 6px;
-    padding-top: 8px;
-  }
+    .hour-btn.selected {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
 
-  .confirm-btn {
-    width: 100%;
-    border-radius: 999px;
-    border: none;
-    height: 50px;
-    font-size: 17px;
-    font-weight: 600;
-    background: #111827;
-    color: #f9fafb;
-  }
+    /* Minutes grid - 4 buttons */
+    .minutes-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding: 20px 0;
+    }
 
-  .confirm-btn:disabled {
-    opacity: 0.4;
-  }
+    .minute-btn {
+      height: 64px;
+      border: none;
+      background: #f3f4f6;
+      border-radius: 16px;
+      font-size: 22px;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
 
-  .hint {
-    font-size: 12px;
-    color: #6b7280;
-    margin-top: 6px;
-    text-align: center;
-  }
-</style>
+    .minute-btn:hover {
+      background: #e5e7eb;
+      transform: translateY(-2px);
+    }
+
+    .minute-btn:active {
+      transform: scale(0.95);
+    }
+
+    .minute-btn.selected {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    /* AM/PM grid - 2 buttons */
+    .ampm-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      padding: 20px 0;
+    }
+
+    .ampm-btn {
+      height: 80px;
+      border: none;
+      background: #f3f4f6;
+      border-radius: 20px;
+      font-size: 28px;
+      font-weight: 600;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .ampm-btn:hover {
+      background: #e5e7eb;
+      transform: translateY(-2px);
+    }
+
+    .ampm-btn:active {
+      transform: scale(0.95);
+    }
+
+    .ampm-btn.selected {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Confirm panel */
+    .confirm-panel {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .final-datetime {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .final-time {
+      font-size: 36px;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 24px;
+    }
+
+    .confirm-btn {
+      width: 100%;
+      height: 56px;
+      border: none;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .confirm-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+    }
+
+    .confirm-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Back button */
+    .back-btn {
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: #f3f4f6;
+      border-radius: 10px;
+      font-size: 16px;
+      color: #6b7280;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .back-btn.visible {
+      display: flex;
+    }
+
+    .back-btn:hover {
+      background: #e5e7eb;
+    }
+
+    /* Edit buttons in header */
+    .edit-section {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .edit-btn {
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      opacity: 0.7;
+    }
+
+    .edit-btn:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .edit-btn.hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <div class="page">
-    <div class="page-header">
-      <div class="page-title">New calendar event</div>
-      <div class="page-subtitle">Set title, duration, date, and time.</div>
-    </div>
-
-    <div class="sections">
-
-      <!-- TITLE + DURATION -->
-      <div class="section">
-        <div class="section-label">Details</div>
-        <div class="card">
-          <div class="input-row">
-            <input id="titleInput" class="input-field" type="text" placeholder="Event title">
-            <div class="input-inline">
-              <input id="durationInput" class="input-field" type="number" min="0.25" step="0.25" placeholder="Duration (hours)">
-              <div style="display:flex;align-items:center;font-size:13px;color:#6b7280;padding-left:4px;">
-                hrs
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- DATE -->
-      <div class="section">
-        <div class="section-label">Date</div>
-        <div class="card">
-          <div class="calendar-header">
-            <button id="prevMonth" class="cal-nav-btn" type="button">&#x2039;</button>
-            <div id="monthLabel" class="month-label"></div>
-            <button id="nextMonth" class="cal-nav-btn" type="button">&#x203A;</button>
-          </div>
-          <div class="weekday-row">
-            <div class="weekday">Sun</div>
-            <div class="weekday">Mon</div>
-            <div class="weekday">Tue</div>
-            <div class="weekday">Wed</div>
-            <div class="weekday">Thu</div>
-            <div class="weekday">Fri</div>
-            <div class="weekday">Sat</div>
-          </div>
-          <div id="daysGrid" class="days-grid"></div>
-        </div>
-      </div>
-
-      <!-- HOUR -->
-      <div class="section">
-        <div class="section-label">Hour</div>
-        <div class="grid-card">
-          <div id="hoursGrid" class="grid-4x3"></div>
-        </div>
-      </div>
-
-      <!-- MINUTES -->
-      <div class="section">
-        <div class="section-label">Minutes</div>
-        <div class="grid-card">
-          <div id="minutesGrid" class="grid-4"></div>
-        </div>
-      </div>
-
-      <!-- AM / PM -->
-      <div class="section">
-        <div class="section-label">AM / PM</div>
-        <div class="grid-card">
-          <div id="ampmGrid" class="grid-2"></div>
-        </div>
+  <div class="picker-container">
+    <div class="picker-header">
+      <div class="selected-display">Selected Date & Time</div>
+      <div class="selected-value" id="displayDate">Select a date</div>
+      <div class="selected-time" id="displayTime"></div>
+      <div class="edit-section">
+        <button class="edit-btn hidden" id="editDate" onclick="goToStep(0)">Edit Date</button>
+        <button class="edit-btn hidden" id="editTime" onclick="goToStep(1)">Edit Time</button>
       </div>
     </div>
 
-    <div class="footer">
-      <button id="confirmBtn" class="confirm-btn" type="button" disabled>Create event</button>
-      <div class="hint">Fill in title, duration, date, hour, minutes, and AM or PM.</div>
+    <div class="step-indicator">
+      <div class="step-dot active" data-step="0"></div>
+      <div class="step-dot" data-step="1"></div>
+      <div class="step-dot" data-step="2"></div>
+      <div class="step-dot" data-step="3"></div>
+    </div>
+
+    <div class="picker-content">
+      <button class="back-btn" id="backBtn" onclick="goBack()">&#8249;</button>
+
+      <!-- Step 0: Calendar -->
+      <div class="step-panel active" id="step0">
+        <div class="step-title">Choose a Date</div>
+        <div class="calendar-nav">
+          <button class="nav-btn" onclick="changeMonth(-1)">&#8249;</button>
+          <div class="month-year" id="monthYear"></div>
+          <button class="nav-btn" onclick="changeMonth(1)">&#8250;</button>
+        </div>
+        <div class="weekdays">
+          <div class="weekday">Su</div>
+          <div class="weekday">Mo</div>
+          <div class="weekday">Tu</div>
+          <div class="weekday">We</div>
+          <div class="weekday">Th</div>
+          <div class="weekday">Fr</div>
+          <div class="weekday">Sa</div>
+        </div>
+        <div class="days-grid" id="daysGrid"></div>
+      </div>
+
+      <!-- Step 1: Hour (4x3 grid, 1-12) -->
+      <div class="step-panel" id="step1">
+        <div class="step-title">Select Hour</div>
+        <div class="hour-grid" id="hourGrid"></div>
+      </div>
+
+      <!-- Step 2: Minutes (0, 15, 30, 45) -->
+      <div class="step-panel" id="step2">
+        <div class="step-title">Select Minutes</div>
+        <div class="minutes-grid" id="minutesGrid"></div>
+      </div>
+
+      <!-- Step 3: AM/PM -->
+      <div class="step-panel" id="step3">
+        <div class="step-title">AM or PM?</div>
+        <div class="ampm-grid" id="ampmGrid"></div>
+      </div>
+
+      <!-- Step 4: Confirm -->
+      <div class="step-panel" id="step4">
+        <div class="confirm-panel">
+          <div class="final-datetime" id="finalDate"></div>
+          <div class="final-time" id="finalTime"></div>
+          <button class="confirm-btn" onclick="confirmSelection()">Confirm Selection</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
-    var monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    // State
+    const state = {
+      currentStep: 0,
+      viewMonth: new Date().getMonth(),
+      viewYear: new Date().getFullYear(),
+      selectedDate: null,
+      selectedHour: null,
+      selectedMinutes: null,
+      selectedAmPm: null
+    };
 
-    var today = new Date();
-    var currentMonth = today.getMonth();
-    var currentYear = today.getFullYear();
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"];
+    const today = new Date();
 
-    var selectedYear = currentYear;
-    var selectedMonth = currentMonth;
-    var selectedDay = today.getDate();
-    var selectedHour = null;
-    var selectedMinutes = null;
-    var selectedAmPm = null;
+    // Initialize
+    function init() {
+      renderCalendar();
+      renderHours();
+      renderMinutes();
+      renderAmPm();
+      updateDisplay();
+    }
 
-    var daysGrid = document.getElementById("daysGrid");
-    var monthLabel = document.getElementById("monthLabel");
-    var confirmBtn = document.getElementById("confirmBtn");
-
+    // Calendar rendering
     function renderCalendar() {
-      monthLabel.textContent = monthNames[currentMonth] + " " + currentYear;
-      daysGrid.innerHTML = "";
+      const monthYear = document.getElementById('monthYear');
+      const daysGrid = document.getElementById('daysGrid');
 
-      var firstDay = new Date(currentYear, currentMonth, 1);
-      var startingWeekday = firstDay.getDay();
-      var daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      monthYear.textContent = `${monthNames[state.viewMonth]} ${state.viewYear}`;
+      daysGrid.innerHTML = '';
 
-      for (var i = 0; i < startingWeekday; i++) {
-        var empty = document.createElement("button");
-        empty.className = "day-btn empty";
-        empty.disabled = true;
-        daysGrid.appendChild(empty);
+      const firstDay = new Date(state.viewYear, state.viewMonth, 1);
+      const lastDay = new Date(state.viewYear, state.viewMonth + 1, 0);
+      const startingDay = firstDay.getDay();
+      const totalDays = lastDay.getDate();
+
+      // Empty cells for days before the 1st
+      for (let i = 0; i < startingDay; i++) {
+        const emptyCell = document.createElement('button');
+        emptyCell.className = 'day-cell empty';
+        daysGrid.appendChild(emptyCell);
       }
 
-      for (var d = 1; d <= daysInMonth; d++) {
-        var btn = document.createElement("button");
-        btn.className = "day-btn";
-        btn.textContent = String(d);
-        btn.dataset.day = String(d);
+      // Day cells
+      for (let day = 1; day <= totalDays; day++) {
+        const dayCell = document.createElement('button');
+        dayCell.className = 'day-cell';
+        dayCell.textContent = day;
 
-        if (d === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
-          btn.classList.add("today");
+        const cellDate = new Date(state.viewYear, state.viewMonth, day);
+
+        // Check if today
+        if (day === today.getDate() &&
+            state.viewMonth === today.getMonth() &&
+            state.viewYear === today.getFullYear()) {
+          dayCell.classList.add('today');
         }
 
-        if (d === selectedDay && currentMonth === selectedMonth && currentYear === selectedYear) {
-          btn.classList.add("selected");
+        // Check if selected
+        if (state.selectedDate &&
+            day === state.selectedDate.getDate() &&
+            state.viewMonth === state.selectedDate.getMonth() &&
+            state.viewYear === state.selectedDate.getFullYear()) {
+          dayCell.classList.add('selected');
         }
 
-        btn.addEventListener("click", function(e) {
-          var day = parseInt(e.currentTarget.dataset.day);
-          selectedDay = day;
-          selectedMonth = currentMonth;
-          selectedYear = currentYear;
-          updateDaySelection();
-          updateConfirmState();
-        });
-
-        daysGrid.appendChild(btn);
+        dayCell.addEventListener('click', () => selectDate(day));
+        daysGrid.appendChild(dayCell);
       }
     }
 
-    function updateDaySelection() {
-      var buttons = daysGrid.querySelectorAll(".day-btn");
-      buttons.forEach(function(b) {
-        if (b.classList.contains("empty")) return;
-        var d = parseInt(b.dataset.day);
-        if (d === selectedDay && currentMonth === selectedMonth && currentYear === selectedYear) {
-          b.classList.add("selected");
-        } else {
-          b.classList.remove("selected");
-        }
-      });
-    }
-
-    document.getElementById("prevMonth").addEventListener("click", function() {
-      currentMonth -= 1;
-      if (currentMonth < 0) {
-        currentMonth = 11;
-        currentYear -= 1;
+    function changeMonth(delta) {
+      state.viewMonth += delta;
+      if (state.viewMonth > 11) {
+        state.viewMonth = 0;
+        state.viewYear++;
+      } else if (state.viewMonth < 0) {
+        state.viewMonth = 11;
+        state.viewYear--;
       }
       renderCalendar();
-      updateConfirmState();
-    });
+    }
 
-    document.getElementById("nextMonth").addEventListener("click", function() {
-      currentMonth += 1;
-      if (currentMonth > 11) {
-        currentMonth = 0;
-        currentYear += 1;
-      }
+    function selectDate(day) {
+      state.selectedDate = new Date(state.viewYear, state.viewMonth, day);
       renderCalendar();
-      updateConfirmState();
-    });
+      updateDisplay();
+      goToStep(1);
+    }
 
-    var hoursGrid = document.getElementById("hoursGrid");
-    function buildHours() {
-      hoursGrid.innerHTML = "";
-      for (var h = 1; h <= 12; h++) {
-        var btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "pill-btn";
-        btn.textContent = String(h);
-        btn.dataset.hour = String(h);
-        if (selectedHour === h) btn.classList.add("selected");
-        btn.addEventListener("click", function(e) {
-          var hour = parseInt(e.currentTarget.dataset.hour);
-          selectedHour = hour;
-          updateHourSelection();
-          updateConfirmState();
-        });
-        hoursGrid.appendChild(btn);
+    // Hour grid (4x3, hours 1-12)
+    function renderHours() {
+      const hourGrid = document.getElementById('hourGrid');
+      hourGrid.innerHTML = '';
+
+      for (let hour = 1; hour <= 12; hour++) {
+        const btn = document.createElement('button');
+        btn.className = 'hour-btn';
+        btn.textContent = hour;
+        if (state.selectedHour === hour) {
+          btn.classList.add('selected');
+        }
+        btn.addEventListener('click', () => selectHour(hour));
+        hourGrid.appendChild(btn);
       }
     }
-    function updateHourSelection() {
-      var buttons = hoursGrid.querySelectorAll(".pill-btn");
-      buttons.forEach(function(b) {
-        var h = parseInt(b.dataset.hour);
-        if (h === selectedHour) {
-          b.classList.add("selected");
-        } else {
-          b.classList.remove("selected");
-        }
-      });
+
+    function selectHour(hour) {
+      state.selectedHour = hour;
+      renderHours();
+      updateDisplay();
+      goToStep(2);
     }
 
-    var minutesGrid = document.getElementById("minutesGrid");
-    var minuteOptions = [0, 15, 30, 45];
-    function buildMinutes() {
-      minutesGrid.innerHTML = "";
-      minuteOptions.forEach(function(m) {
-        var btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "pill-btn";
-        var label = (m === 0 ? "00" : String(m));
-        btn.textContent = label;
-        btn.dataset.min = String(m);
-        if (selectedMinutes === m) btn.classList.add("selected");
-        btn.addEventListener("click", function(e) {
-          var mins = parseInt(e.currentTarget.dataset.min);
-          selectedMinutes = mins;
-          updateMinuteSelection();
-          updateConfirmState();
-        });
+    // Minutes grid (0, 15, 30, 45)
+    function renderMinutes() {
+      const minutesGrid = document.getElementById('minutesGrid');
+      minutesGrid.innerHTML = '';
+      const minutes = [0, 15, 30, 45];
+
+      minutes.forEach(min => {
+        const btn = document.createElement('button');
+        btn.className = 'minute-btn';
+        btn.textContent = min === 0 ? ':00' : `:${min}`;
+        if (state.selectedMinutes === min) {
+          btn.classList.add('selected');
+        }
+        btn.addEventListener('click', () => selectMinutes(min));
         minutesGrid.appendChild(btn);
       });
     }
-    function updateMinuteSelection() {
-      var buttons = minutesGrid.querySelectorAll(".pill-btn");
-      buttons.forEach(function(b) {
-        var mins = parseInt(b.dataset.min);
-        if (mins === selectedMinutes) {
-          b.classList.add("selected");
-        } else {
-          b.classList.remove("selected");
-        }
-      });
+
+    function selectMinutes(min) {
+      state.selectedMinutes = min;
+      renderMinutes();
+      updateDisplay();
+      goToStep(3);
     }
 
-    var ampmGrid = document.getElementById("ampmGrid");
-    function buildAmPm() {
-      ampmGrid.innerHTML = "";
-      ["AM","PM"].forEach(function(period) {
-        var btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "pill-btn";
+    // AM/PM grid
+    function renderAmPm() {
+      const ampmGrid = document.getElementById('ampmGrid');
+      ampmGrid.innerHTML = '';
+      ['AM', 'PM'].forEach(period => {
+        const btn = document.createElement('button');
+        btn.className = 'ampm-btn';
         btn.textContent = period;
-        btn.dataset.period = period;
-        if (selectedAmPm === period) btn.classList.add("selected");
-        btn.addEventListener("click", function(e) {
-          selectedAmPm = e.currentTarget.dataset.period;
-          updateAmPmSelection();
-          updateConfirmState();
-        });
+        if (state.selectedAmPm === period) {
+          btn.classList.add('selected');
+        }
+        btn.addEventListener('click', () => selectAmPm(period));
         ampmGrid.appendChild(btn);
       });
     }
-    function updateAmPmSelection() {
-      var buttons = ampmGrid.querySelectorAll(".pill-btn");
-      buttons.forEach(function(b) {
-        if (b.dataset.period === selectedAmPm) {
-          b.classList.add("selected");
-        } else {
-          b.classList.remove("selected");
+
+    function selectAmPm(period) {
+      state.selectedAmPm = period;
+      renderAmPm();
+      updateDisplay();
+      goToStep(4);
+    }
+
+    // Navigation
+    function goToStep(step) {
+      state.currentStep = step;
+
+      // Update panels
+      document.querySelectorAll('.step-panel').forEach((panel, i) => {
+        panel.classList.toggle('active', i === step);
+      });
+
+      // Update dots
+      document.querySelectorAll('.step-dot').forEach((dot, i) => {
+        dot.classList.remove('active', 'completed');
+        if (i === step && step < 4) {
+          dot.classList.add('active');
+        } else if (i < step || (step === 4 && i < 4)) {
+          dot.classList.add('completed');
         }
       });
-    }
 
-    function hasTextValue(id) {
-      var el = document.getElementById(id);
-      if (!el) return false;
-      return el.value.trim().length > 0;
-    }
+      // Update back button
+      document.getElementById('backBtn').classList.toggle('visible', step > 0);
 
-    function updateConfirmState() {
-      var hasDate = selectedYear != null && selectedMonth != null && selectedDay != null;
-      var hasHour = selectedHour != null;
-      var hasMin = selectedMinutes != null;
-      var hasPeriod = selectedAmPm != null;
-      var hasTitle = hasTextValue("titleInput");
-      var hasDuration = hasTextValue("durationInput");
-      confirmBtn.disabled = !(hasDate && hasHour && hasMin && hasPeriod && hasTitle && hasDuration);
-    }
+      // Update edit buttons
+      document.getElementById('editDate').classList.toggle('hidden', step < 1);
+      document.getElementById('editTime').classList.toggle('hidden', step < 2);
 
-    document.getElementById("titleInput").addEventListener("input", updateConfirmState);
-    document.getElementById("durationInput").addEventListener("input", updateConfirmState);
-
-    document.getElementById("confirmBtn").addEventListener("click", function() {
-      if (confirmBtn.disabled) return;
-
-      var title = document.getElementById("titleInput").value.trim();
-      var durationStr = document.getElementById("durationInput").value.trim();
-      var durationHours = parseFloat(durationStr);
-      if (!durationHours || durationHours <= 0) {
-        alert("Enter a valid duration in hours.");
-        return;
+      // Update final display
+      if (step === 4) {
+        updateFinalDisplay();
       }
+    }
 
-      var hour12 = selectedHour;
-      var hour24 = hour12;
-      if (selectedAmPm === "AM") {
-        if (hour12 === 12) hour24 = 0;
+    function goBack() {
+      if (state.currentStep > 0) {
+        goToStep(state.currentStep - 1);
+      }
+    }
+
+    // Display updates
+    function updateDisplay() {
+      const displayDate = document.getElementById('displayDate');
+      const displayTime = document.getElementById('displayTime');
+
+      if (state.selectedDate) {
+        const options = { weekday: 'long', month: 'long', day: 'numeric' };
+        displayDate.textContent = state.selectedDate.toLocaleDateString('en-US', options);
       } else {
-        if (hour12 !== 12) hour24 = hour12 + 12;
+        displayDate.textContent = 'Select a date';
       }
 
-      var payload = {
-        title: title,
-        durationHours: durationHours,
-        year: selectedYear,
-        month: selectedMonth,
-        day: selectedDay,
+      if (state.selectedHour !== null) {
+        const minStr = state.selectedMinutes !== null ?
+          (state.selectedMinutes === 0 ? '00' : state.selectedMinutes) : '--';
+        const periodStr = state.selectedAmPm || '--';
+        displayTime.textContent = `${state.selectedHour}:${minStr} ${periodStr}`;
+      } else {
+        displayTime.textContent = '';
+      }
+    }
+
+    function updateFinalDisplay() {
+      const finalDate = document.getElementById('finalDate');
+      const finalTime = document.getElementById('finalTime');
+
+      if (state.selectedDate) {
+        const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+        finalDate.textContent = state.selectedDate.toLocaleDateString('en-US', options);
+      }
+
+      if (state.selectedHour !== null && state.selectedMinutes !== null && state.selectedAmPm) {
+        const minStr = state.selectedMinutes === 0 ? '00' : state.selectedMinutes;
+        finalTime.textContent = `${state.selectedHour}:${minStr} ${state.selectedAmPm}`;
+      }
+    }
+
+    // Confirm
+    function confirmSelection() {
+      // Convert to 24-hour format
+      let hour24 = state.selectedHour;
+      if (state.selectedAmPm === 'AM') {
+        if (hour24 === 12) hour24 = 0;
+      } else {
+        if (hour24 !== 12) hour24 += 12;
+      }
+
+      const result = {
+        date: state.selectedDate.toISOString().split('T')[0],
+        year: state.selectedDate.getFullYear(),
+        month: state.selectedDate.getMonth() + 1,
+        day: state.selectedDate.getDate(),
         hour: hour24,
-        minute: selectedMinutes
+        hour12: state.selectedHour,
+        minutes: state.selectedMinutes,
+        ampm: state.selectedAmPm,
+        formatted: `${state.selectedDate.toLocaleDateString('en-US', {
+          weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+        })} at ${state.selectedHour}:${state.selectedMinutes === 0 ? '00' : state.selectedMinutes} ${state.selectedAmPm}`
       };
 
-      var json = JSON.stringify(payload);
-      var encoded = encodeURIComponent(json);
+      console.log('Selected DateTime:', result);
 
-      // IMPORTANT: change the shortcut name here to match your Shortcut
-      var shortcutName = "Create Calendar Event";
+      // For Siri Shortcuts integration
+      const encoded = encodeURIComponent(JSON.stringify(result));
+      const shortcutName = "Handle DateTime";
 
-      window.location.href =
-        "shortcuts://run-shortcut?name=" +
-        encodeURIComponent(shortcutName) +
-        "&input=" + encoded;
-    });
+      // Uncomment to trigger shortcut:
+      // window.location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(shortcutName)}&input=${encoded}`;
 
-    renderCalendar();
-    buildHours();
-    buildMinutes();
-    buildAmPm();
-    updateConfirmState();
+      alert(`Selected: ${result.formatted}`);
+    }
+
+    // Start
+    init();
   </script>
 </body>
 </html>
