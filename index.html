@@ -2,174 +2,249 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Date & Time Picker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Select Date & Time</title>
   <style>
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.72);
+      --glass-border: rgba(255, 255, 255, 0.5);
+      --glass-shadow: rgba(0, 0, 0, 0.08);
+      --chip-bg: rgba(255, 255, 255, 0.6);
+      --chip-hover: rgba(255, 255, 255, 0.85);
+      --chip-border: rgba(255, 255, 255, 0.8);
+      --accent: #7c3aed;
+      --accent-light: rgba(124, 58, 237, 0.12);
+      --accent-glow: rgba(124, 58, 237, 0.35);
+      --text-primary: #1a1a2e;
+      --text-secondary: #64648c;
+      --text-tertiary: #9898b0;
+      --today-ring: rgba(124, 58, 237, 0.4);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .picker-container {
-      width: 100%;
-      max-width: 380px;
-      background: #fff;
-      border-radius: 24px;
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+    html, body {
+      height: 100%;
       overflow: hidden;
     }
 
-    /* Header showing selected date/time */
-    .picker-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      padding: 24px 20px;
-      text-align: center;
-    }
-
-    .selected-display {
-      font-size: 14px;
-      opacity: 0.85;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .selected-value {
-      font-size: 28px;
-      font-weight: 600;
-      min-height: 36px;
-    }
-
-    .selected-time {
-      font-size: 20px;
-      margin-top: 4px;
-      opacity: 0.9;
-      min-height: 26px;
-    }
-
-    /* Step indicator */
-    .step-indicator {
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+      background: linear-gradient(145deg, #c7d2fe 0%, #e0e7ff 30%, #fce7f3 70%, #fdf2f8 100%);
       display: flex;
       justify-content: center;
-      gap: 8px;
-      padding: 16px 20px 8px;
+      align-items: center;
+      padding: 16px;
     }
 
-    .step-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #e0e0e0;
-      transition: all 0.3s ease;
-    }
-
-    .step-dot.active {
-      background: #667eea;
-      transform: scale(1.2);
-    }
-
-    .step-dot.completed {
-      background: #4ade80;
-    }
-
-    /* Main content area */
-    .picker-content {
-      padding: 12px 16px 20px;
+    /* Glass Sheet */
+    .sheet {
+      width: 100%;
+      max-width: 400px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border-radius: 28px;
+      border: 1px solid var(--glass-border);
+      box-shadow:
+        0 0 0 0.5px rgba(255,255,255,0.6) inset,
+        0 1px 0 rgba(255,255,255,0.9) inset,
+        0 25px 60px -12px var(--glass-shadow),
+        0 12px 30px -8px rgba(0,0,0,0.12);
       position: relative;
-      min-height: 340px;
+      overflow: hidden;
     }
 
-    /* Step panels */
-    .step-panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
+    /* Specular sweep */
+    .sheet::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
+      pointer-events: none;
+      border-radius: 28px 28px 0 0;
     }
 
-    .step-panel.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .step-title {
-      text-align: center;
-      font-size: 16px;
-      font-weight: 600;
-      color: #374151;
-      margin-bottom: 16px;
-    }
-
-    /* Calendar styles */
-    .calendar-nav {
+    /* Header */
+    .header {
+      padding: 20px 20px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
     }
 
-    .nav-btn {
-      width: 40px;
-      height: 40px;
+    .header-left {
+      flex: 1;
+    }
+
+    .header-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+
+    .summary-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--chip-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--chip-border);
+      border-radius: 20px;
+      padding: 8px 14px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      box-shadow:
+        0 2px 8px rgba(0,0,0,0.06),
+        0 0 0 0.5px rgba(255,255,255,0.5) inset;
+    }
+
+    .summary-pill .dot {
+      width: 4px;
+      height: 4px;
+      background: var(--text-tertiary);
+      border-radius: 50%;
+    }
+
+    .close-btn {
+      width: 32px;
+      height: 32px;
       border: none;
-      background: #f3f4f6;
-      border-radius: 12px;
-      font-size: 18px;
-      color: #374151;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      background: rgba(0,0,0,0.06);
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .nav-btn:hover {
-      background: #e5e7eb;
-    }
-
-    .nav-btn:active {
-      transform: scale(0.95);
-    }
-
-    .month-year {
+      cursor: pointer;
+      color: var(--text-secondary);
       font-size: 18px;
-      font-weight: 600;
-      color: #1f2937;
+      transition: all 0.2s ease;
     }
 
+    .close-btn:hover {
+      background: rgba(0,0,0,0.1);
+    }
+
+    .close-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* Body */
+    .body {
+      padding: 0 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Section styling */
+    .section {
+      background: rgba(255,255,255,0.45);
+      border-radius: 20px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,0.6);
+      box-shadow:
+        0 4px 16px rgba(0,0,0,0.04),
+        0 0 0 0.5px rgba(255,255,255,0.4) inset;
+    }
+
+    /* Calendar Header */
+    .cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .cal-nav {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 16px;
+      transition: all 0.15s ease;
+    }
+
+    .cal-nav:hover {
+      background: rgba(0,0,0,0.05);
+    }
+
+    .cal-nav:active {
+      transform: scale(0.9);
+    }
+
+    .month-chip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--chip-bg);
+      border: 1px solid var(--chip-border);
+      border-radius: 12px;
+      padding: 6px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .month-chip:hover {
+      background: var(--chip-hover);
+    }
+
+    .month-chip:active {
+      transform: scale(0.97);
+    }
+
+    .month-chip .chevron {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      margin-left: 2px;
+    }
+
+    /* Weekday row */
     .weekdays {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      margin-bottom: 8px;
+      gap: 2px;
+      margin-bottom: 6px;
     }
 
     .weekday {
       text-align: center;
-      font-size: 12px;
-      font-weight: 500;
-      color: #9ca3af;
-      padding: 8px 0;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      padding: 6px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
     }
 
+    /* Days grid */
     .days-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
+      gap: 3px;
     }
 
     .day-cell {
@@ -179,315 +254,471 @@
       border-radius: 12px;
       font-size: 14px;
       font-weight: 500;
-      color: #374151;
+      color: var(--text-primary);
       cursor: pointer;
-      transition: all 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
     }
 
     .day-cell:hover:not(.empty):not(.selected) {
-      background: #f3f4f6;
+      background: rgba(0,0,0,0.04);
     }
 
     .day-cell:active:not(.empty) {
-      transform: scale(0.92);
+      transform: scale(0.88);
     }
 
     .day-cell.empty {
       visibility: hidden;
     }
 
-    .day-cell.today:not(.selected) {
-      border: 2px solid #667eea;
-      color: #667eea;
+    .day-cell.today:not(.selected)::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      width: 4px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
     }
 
     .day-cell.selected {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
+      background: var(--accent);
+      color: white;
       font-weight: 600;
+      box-shadow:
+        0 4px 12px var(--accent-glow),
+        0 0 0 1px rgba(255,255,255,0.3) inset;
     }
 
-    .day-cell.past {
-      color: #d1d5db;
+    .day-cell.past:not(.selected) {
+      color: var(--text-tertiary);
     }
 
-    /* Hour grid - 4x3 layout */
+    /* Time Section */
+    .time-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .time-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .time-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      width: 52px;
+      flex-shrink: 0;
+    }
+
+    /* Hour grid - 4x3 */
     .hour-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      padding: 8px 0;
+      gap: 6px;
+      flex: 1;
     }
 
-    .hour-btn {
-      height: 56px;
+    .hour-chip {
+      height: 38px;
       border: none;
-      background: #f3f4f6;
-      border-radius: 14px;
-      font-size: 20px;
+      background: var(--chip-bg);
+      border-radius: 10px;
+      font-size: 15px;
       font-weight: 500;
-      color: #374151;
+      color: var(--text-primary);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
 
-    .hour-btn:hover {
-      background: #e5e7eb;
-      transform: translateY(-2px);
+    .hour-chip:hover {
+      background: var(--chip-hover);
+      transform: translateY(-1px);
     }
 
-    .hour-btn:active {
-      transform: scale(0.95);
+    .hour-chip:active {
+      transform: scale(0.94);
     }
 
-    .hour-btn.selected {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
+    .hour-chip.selected {
+      background: var(--accent);
+      color: white;
       font-weight: 600;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      border-color: transparent;
+      box-shadow:
+        0 4px 12px var(--accent-glow),
+        0 0 0 1px rgba(255,255,255,0.25) inset;
     }
 
-    /* Minutes grid - 4 buttons */
-    .minutes-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      padding: 20px 0;
+    /* Minutes row */
+    .minutes-row {
+      display: flex;
+      gap: 6px;
+      flex: 1;
+      flex-wrap: wrap;
     }
 
-    .minute-btn {
-      height: 64px;
+    .minute-chip {
+      flex: 1;
+      min-width: 48px;
+      height: 38px;
       border: none;
-      background: #f3f4f6;
-      border-radius: 16px;
-      font-size: 22px;
+      background: var(--chip-bg);
+      border-radius: 10px;
+      font-size: 14px;
       font-weight: 500;
-      color: #374151;
+      color: var(--text-primary);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
 
-    .minute-btn:hover {
-      background: #e5e7eb;
-      transform: translateY(-2px);
+    .minute-chip:hover {
+      background: var(--chip-hover);
+      transform: translateY(-1px);
     }
 
-    .minute-btn:active {
-      transform: scale(0.95);
+    .minute-chip:active {
+      transform: scale(0.94);
     }
 
-    .minute-btn.selected {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
+    .minute-chip.selected {
+      background: var(--accent);
+      color: white;
       font-weight: 600;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      border-color: transparent;
+      box-shadow:
+        0 4px 12px var(--accent-glow),
+        0 0 0 1px rgba(255,255,255,0.25) inset;
     }
 
-    /* AM/PM grid - 2 buttons */
-    .ampm-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      padding: 20px 0;
+    .minute-chip.more {
+      background: rgba(0,0,0,0.04);
+      color: var(--text-secondary);
+      font-size: 13px;
+      border-color: transparent;
+    }
+
+    .minute-chip.more:hover {
+      background: rgba(0,0,0,0.08);
+    }
+
+    /* Extended minutes row */
+    .minutes-extended {
+      display: none;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .minutes-extended.visible {
+      display: flex;
+    }
+
+    .minutes-extended .minute-chip {
+      flex: 0 0 calc(25% - 5px);
+    }
+
+    /* AM/PM Segmented Control */
+    .ampm-control {
+      display: flex;
+      background: rgba(0,0,0,0.05);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 2px;
     }
 
     .ampm-btn {
-      height: 80px;
+      flex: 1;
+      height: 32px;
       border: none;
-      background: #f3f4f6;
-      border-radius: 20px;
-      font-size: 28px;
+      background: transparent;
+      border-radius: 8px;
+      font-size: 13px;
       font-weight: 600;
-      color: #374151;
+      color: var(--text-secondary);
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
-    .ampm-btn:hover {
-      background: #e5e7eb;
-      transform: translateY(-2px);
-    }
-
-    .ampm-btn:active {
-      transform: scale(0.95);
+    .ampm-btn:hover:not(.selected) {
+      color: var(--text-primary);
     }
 
     .ampm-btn.selected {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      background: white;
+      color: var(--text-primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
 
-    /* Confirm panel */
-    .confirm-panel {
-      text-align: center;
-      padding: 20px 0;
+    /* Action bar */
+    .action-bar {
+      padding: 12px 16px 16px;
+      display: flex;
+      gap: 10px;
     }
 
-    .final-datetime {
-      font-size: 24px;
-      font-weight: 600;
-      color: #1f2937;
-      margin-bottom: 8px;
-    }
-
-    .final-time {
-      font-size: 36px;
-      font-weight: 700;
-      color: #667eea;
-      margin-bottom: 24px;
-    }
-
-    .confirm-btn {
-      width: 100%;
-      height: 56px;
+    .btn-cancel {
+      flex: 1;
+      height: 50px;
       border: none;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 16px;
-      font-size: 18px;
+      background: rgba(0,0,0,0.05);
+      border-radius: 14px;
+      font-size: 16px;
       font-weight: 600;
-      color: #fff;
+      color: var(--text-secondary);
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
     }
 
-    .confirm-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+    .btn-cancel:hover {
+      background: rgba(0,0,0,0.08);
     }
 
-    .confirm-btn:active {
+    .btn-cancel:active {
       transform: scale(0.98);
     }
 
-    /* Back button */
-    .back-btn {
-      position: absolute;
-      top: 12px;
-      left: 16px;
-      width: 36px;
-      height: 36px;
+    .btn-done {
+      flex: 2;
+      height: 50px;
       border: none;
-      background: #f3f4f6;
-      border-radius: 10px;
+      background: var(--accent);
+      border-radius: 14px;
       font-size: 16px;
-      color: #6b7280;
+      font-weight: 600;
+      color: white;
       cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow:
+        0 4px 16px var(--accent-glow),
+        0 0 0 1px rgba(255,255,255,0.15) inset;
+    }
+
+    .btn-done:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+    }
+
+    .btn-done:active {
+      transform: scale(0.98);
+    }
+
+    /* Month/Year Picker Modal */
+    .month-picker-overlay {
       display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.2);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      border-radius: 28px;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s ease;
     }
 
-    .back-btn.visible {
+    .month-picker-overlay.visible {
       display: flex;
     }
 
-    .back-btn:hover {
-      background: #e5e7eb;
+    .month-picker {
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px);
+      border-radius: 20px;
+      padding: 16px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      width: calc(100% - 40px);
+      max-width: 320px;
     }
 
-    /* Edit buttons in header */
-    .edit-section {
+    .month-picker-header {
       display: flex;
-      justify-content: center;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .year-nav {
+      display: flex;
+      align-items: center;
       gap: 12px;
-      margin-top: 12px;
     }
 
-    .edit-btn {
-      padding: 6px 12px;
-      background: rgba(255, 255, 255, 0.2);
+    .year-nav button {
+      width: 28px;
+      height: 28px;
       border: none;
+      background: rgba(0,0,0,0.05);
       border-radius: 8px;
-      color: #fff;
-      font-size: 12px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      opacity: 0.7;
+      color: var(--text-secondary);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .edit-btn:hover {
-      opacity: 1;
-      background: rgba(255, 255, 255, 0.3);
+    .year-nav button:hover {
+      background: rgba(0,0,0,0.08);
     }
 
-    .edit-btn.hidden {
-      display: none;
+    .year-nav span {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .month-picker-close {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: rgba(0,0,0,0.06);
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .months-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .month-option {
+      height: 40px;
+      border: none;
+      background: var(--chip-bg);
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    .month-option:hover {
+      background: var(--chip-hover);
+    }
+
+    .month-option.selected {
+      background: var(--accent);
+      color: white;
+      border-color: transparent;
+    }
+
+    /* Slide animation for calendar */
+    .days-grid.slide-left {
+      animation: slideLeft 0.25s ease;
+    }
+
+    .days-grid.slide-right {
+      animation: slideRight 0.25s ease;
+    }
+
+    @keyframes slideLeft {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
     }
   </style>
 </head>
 <body>
-  <div class="picker-container">
-    <div class="picker-header">
-      <div class="selected-display">Selected Date & Time</div>
-      <div class="selected-value" id="displayDate">Select a date</div>
-      <div class="selected-time" id="displayTime"></div>
-      <div class="edit-section">
-        <button class="edit-btn hidden" id="editDate" onclick="goToStep(0)">Edit Date</button>
-        <button class="edit-btn hidden" id="editTime" onclick="goToStep(1)">Edit Time</button>
+  <div class="sheet">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <div class="header-title">Select date and time</div>
+        <div class="summary-pill" id="summaryPill">
+          <span id="summaryDate">Sat, Dec 13</span>
+          <span class="dot"></span>
+          <span id="summaryTime">8:00 AM</span>
+        </div>
       </div>
+      <button class="close-btn" onclick="handleClose()">✕</button>
     </div>
 
-    <div class="step-indicator">
-      <div class="step-dot active" data-step="0"></div>
-      <div class="step-dot" data-step="1"></div>
-      <div class="step-dot" data-step="2"></div>
-      <div class="step-dot" data-step="3"></div>
-    </div>
-
-    <div class="picker-content">
-      <button class="back-btn" id="backBtn" onclick="goBack()">&#8249;</button>
-
-      <!-- Step 0: Calendar -->
-      <div class="step-panel active" id="step0">
-        <div class="step-title">Choose a Date</div>
-        <div class="calendar-nav">
-          <button class="nav-btn" onclick="changeMonth(-1)">&#8249;</button>
-          <div class="month-year" id="monthYear"></div>
-          <button class="nav-btn" onclick="changeMonth(1)">&#8250;</button>
+    <!-- Body -->
+    <div class="body">
+      <!-- Calendar Section -->
+      <div class="section">
+        <div class="cal-header">
+          <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+          <button class="month-chip" onclick="openMonthPicker()">
+            <span id="monthLabel">December 2025</span>
+            <span class="chevron">▼</span>
+          </button>
+          <button class="cal-nav" onclick="changeMonth(1)">›</button>
         </div>
         <div class="weekdays">
-          <div class="weekday">Su</div>
-          <div class="weekday">Mo</div>
-          <div class="weekday">Tu</div>
-          <div class="weekday">We</div>
-          <div class="weekday">Th</div>
-          <div class="weekday">Fr</div>
-          <div class="weekday">Sa</div>
+          <div class="weekday">Sun</div>
+          <div class="weekday">Mon</div>
+          <div class="weekday">Tue</div>
+          <div class="weekday">Wed</div>
+          <div class="weekday">Thu</div>
+          <div class="weekday">Fri</div>
+          <div class="weekday">Sat</div>
         </div>
         <div class="days-grid" id="daysGrid"></div>
       </div>
 
-      <!-- Step 1: Hour (4x3 grid, 1-12) -->
-      <div class="step-panel" id="step1">
-        <div class="step-title">Select Hour</div>
-        <div class="hour-grid" id="hourGrid"></div>
-      </div>
-
-      <!-- Step 2: Minutes (0, 15, 30, 45) -->
-      <div class="step-panel" id="step2">
-        <div class="step-title">Select Minutes</div>
-        <div class="minutes-grid" id="minutesGrid"></div>
-      </div>
-
-      <!-- Step 3: AM/PM -->
-      <div class="step-panel" id="step3">
-        <div class="step-title">AM or PM?</div>
-        <div class="ampm-grid" id="ampmGrid"></div>
-      </div>
-
-      <!-- Step 4: Confirm -->
-      <div class="step-panel" id="step4">
-        <div class="confirm-panel">
-          <div class="final-datetime" id="finalDate"></div>
-          <div class="final-time" id="finalTime"></div>
-          <button class="confirm-btn" onclick="confirmSelection()">Confirm Selection</button>
+      <!-- Time Section -->
+      <div class="section time-section">
+        <div class="time-row">
+          <span class="time-label">Hour</span>
+          <div class="hour-grid" id="hourGrid"></div>
         </div>
+        <div class="time-row">
+          <span class="time-label">Min</span>
+          <div class="minutes-row" id="minutesRow"></div>
+        </div>
+        <div class="minutes-extended" id="minutesExtended"></div>
+        <div class="time-row">
+          <span class="time-label"></span>
+          <div class="ampm-control" id="ampmControl"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="action-bar">
+      <button class="btn-cancel" onclick="handleCancel()">Cancel</button>
+      <button class="btn-done" onclick="handleDone()">Done</button>
+    </div>
+
+    <!-- Month Picker Overlay -->
+    <div class="month-picker-overlay" id="monthPickerOverlay">
+      <div class="month-picker">
+        <div class="month-picker-header">
+          <div class="year-nav">
+            <button onclick="changePickerYear(-1)">‹</button>
+            <span id="pickerYear">2025</span>
+            <button onclick="changePickerYear(1)">›</button>
+          </div>
+          <button class="month-picker-close" onclick="closeMonthPicker()">✕</button>
+        </div>
+        <div class="months-grid" id="monthsGrid"></div>
       </div>
     </div>
   </div>
@@ -495,34 +726,72 @@
   <script>
     // State
     const state = {
-      currentStep: 0,
       viewMonth: new Date().getMonth(),
       viewYear: new Date().getFullYear(),
-      selectedDate: null,
-      selectedHour: null,
-      selectedMinutes: null,
-      selectedAmPm: null
+      pickerYear: new Date().getFullYear(),
+      selectedDate: new Date(),
+      selectedHour: 8,
+      selectedMinutes: 0,
+      selectedAmPm: 'AM',
+      showExtendedMinutes: false
     };
 
     const monthNames = ["January", "February", "March", "April", "May", "June",
                         "July", "August", "September", "October", "November", "December"];
+    const monthNamesShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const dayNamesShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const today = new Date();
 
-    // Initialize
+    // Initialize with smart defaults
     function init() {
+      // Set default time to next quarter hour
+      const now = new Date();
+      const minutes = now.getMinutes();
+      const nextQuarter = Math.ceil(minutes / 15) * 15;
+
+      if (nextQuarter >= 60) {
+        now.setHours(now.getHours() + 1);
+        state.selectedMinutes = 0;
+      } else {
+        state.selectedMinutes = nextQuarter;
+      }
+
+      let hour = now.getHours();
+      if (hour >= 12) {
+        state.selectedAmPm = 'PM';
+        if (hour > 12) hour -= 12;
+      } else {
+        state.selectedAmPm = 'AM';
+        if (hour === 0) hour = 12;
+      }
+      state.selectedHour = hour;
+
+      state.selectedDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      state.viewMonth = state.selectedDate.getMonth();
+      state.viewYear = state.selectedDate.getFullYear();
+
       renderCalendar();
       renderHours();
       renderMinutes();
       renderAmPm();
-      updateDisplay();
+      updateSummary();
     }
 
-    // Calendar rendering
-    function renderCalendar() {
-      const monthYear = document.getElementById('monthYear');
+    // Calendar
+    function renderCalendar(direction = null) {
+      const monthLabel = document.getElementById('monthLabel');
       const daysGrid = document.getElementById('daysGrid');
 
-      monthYear.textContent = `${monthNames[state.viewMonth]} ${state.viewYear}`;
+      monthLabel.textContent = `${monthNames[state.viewMonth]} ${state.viewYear}`;
+
+      // Animation
+      if (direction) {
+        daysGrid.classList.remove('slide-left', 'slide-right');
+        void daysGrid.offsetWidth; // Trigger reflow
+        daysGrid.classList.add(direction === 1 ? 'slide-left' : 'slide-right');
+      }
+
       daysGrid.innerHTML = '';
 
       const firstDay = new Date(state.viewYear, state.viewMonth, 1);
@@ -530,38 +799,43 @@
       const startingDay = firstDay.getDay();
       const totalDays = lastDay.getDate();
 
-      // Empty cells for days before the 1st
+      // Empty cells
       for (let i = 0; i < startingDay; i++) {
-        const emptyCell = document.createElement('button');
-        emptyCell.className = 'day-cell empty';
-        daysGrid.appendChild(emptyCell);
+        const cell = document.createElement('button');
+        cell.className = 'day-cell empty';
+        daysGrid.appendChild(cell);
       }
 
       // Day cells
       for (let day = 1; day <= totalDays; day++) {
-        const dayCell = document.createElement('button');
-        dayCell.className = 'day-cell';
-        dayCell.textContent = day;
+        const cell = document.createElement('button');
+        cell.className = 'day-cell';
+        cell.textContent = day;
 
         const cellDate = new Date(state.viewYear, state.viewMonth, day);
 
-        // Check if today
+        // Today indicator
         if (day === today.getDate() &&
             state.viewMonth === today.getMonth() &&
             state.viewYear === today.getFullYear()) {
-          dayCell.classList.add('today');
+          cell.classList.add('today');
         }
 
-        // Check if selected
+        // Selected state
         if (state.selectedDate &&
             day === state.selectedDate.getDate() &&
             state.viewMonth === state.selectedDate.getMonth() &&
             state.viewYear === state.selectedDate.getFullYear()) {
-          dayCell.classList.add('selected');
+          cell.classList.add('selected');
         }
 
-        dayCell.addEventListener('click', () => selectDate(day));
-        daysGrid.appendChild(dayCell);
+        // Past dates (lighter)
+        if (cellDate < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+          cell.classList.add('past');
+        }
+
+        cell.addEventListener('click', () => selectDate(day));
+        daysGrid.appendChild(cell);
       }
     }
 
@@ -574,69 +848,136 @@
         state.viewMonth = 11;
         state.viewYear--;
       }
-      renderCalendar();
+      renderCalendar(delta);
     }
 
     function selectDate(day) {
       state.selectedDate = new Date(state.viewYear, state.viewMonth, day);
       renderCalendar();
-      updateDisplay();
-      goToStep(1);
+      updateSummary();
     }
 
-    // Hour grid (4x3, hours 1-12)
-    function renderHours() {
-      const hourGrid = document.getElementById('hourGrid');
-      hourGrid.innerHTML = '';
+    // Month Picker
+    function openMonthPicker() {
+      state.pickerYear = state.viewYear;
+      document.getElementById('monthPickerOverlay').classList.add('visible');
+      renderMonthPicker();
+    }
 
-      for (let hour = 1; hour <= 12; hour++) {
+    function closeMonthPicker() {
+      document.getElementById('monthPickerOverlay').classList.remove('visible');
+    }
+
+    function renderMonthPicker() {
+      document.getElementById('pickerYear').textContent = state.pickerYear;
+      const grid = document.getElementById('monthsGrid');
+      grid.innerHTML = '';
+
+      monthNamesShort.forEach((name, i) => {
         const btn = document.createElement('button');
-        btn.className = 'hour-btn';
-        btn.textContent = hour;
-        if (state.selectedHour === hour) {
+        btn.className = 'month-option';
+        btn.textContent = name;
+
+        if (i === state.viewMonth && state.pickerYear === state.viewYear) {
           btn.classList.add('selected');
         }
-        btn.addEventListener('click', () => selectHour(hour));
-        hourGrid.appendChild(btn);
-      }
-    }
 
-    function selectHour(hour) {
-      state.selectedHour = hour;
-      renderHours();
-      updateDisplay();
-      goToStep(2);
-    }
+        btn.addEventListener('click', () => {
+          state.viewMonth = i;
+          state.viewYear = state.pickerYear;
+          closeMonthPicker();
+          renderCalendar();
+        });
 
-    // Minutes grid (0, 15, 30, 45)
-    function renderMinutes() {
-      const minutesGrid = document.getElementById('minutesGrid');
-      minutesGrid.innerHTML = '';
-      const minutes = [0, 15, 30, 45];
-
-      minutes.forEach(min => {
-        const btn = document.createElement('button');
-        btn.className = 'minute-btn';
-        btn.textContent = min === 0 ? ':00' : `:${min}`;
-        if (state.selectedMinutes === min) {
-          btn.classList.add('selected');
-        }
-        btn.addEventListener('click', () => selectMinutes(min));
-        minutesGrid.appendChild(btn);
+        grid.appendChild(btn);
       });
     }
 
-    function selectMinutes(min) {
-      state.selectedMinutes = min;
-      renderMinutes();
-      updateDisplay();
-      goToStep(3);
+    function changePickerYear(delta) {
+      state.pickerYear += delta;
+      renderMonthPicker();
     }
 
-    // AM/PM grid
+    // Hours
+    function renderHours() {
+      const grid = document.getElementById('hourGrid');
+      grid.innerHTML = '';
+
+      for (let h = 1; h <= 12; h++) {
+        const btn = document.createElement('button');
+        btn.className = 'hour-chip';
+        btn.textContent = h;
+        if (state.selectedHour === h) {
+          btn.classList.add('selected');
+        }
+        btn.addEventListener('click', () => {
+          state.selectedHour = h;
+          renderHours();
+          updateSummary();
+        });
+        grid.appendChild(btn);
+      }
+    }
+
+    // Minutes
+    function renderMinutes() {
+      const row = document.getElementById('minutesRow');
+      const extended = document.getElementById('minutesExtended');
+      row.innerHTML = '';
+      extended.innerHTML = '';
+
+      const mainMinutes = [0, 15, 30, 45];
+      const extraMinutes = [5, 10, 20, 25, 35, 40, 50, 55];
+
+      mainMinutes.forEach(m => {
+        const btn = document.createElement('button');
+        btn.className = 'minute-chip';
+        btn.textContent = m === 0 ? ':00' : `:${m}`;
+        if (state.selectedMinutes === m) {
+          btn.classList.add('selected');
+        }
+        btn.addEventListener('click', () => {
+          state.selectedMinutes = m;
+          renderMinutes();
+          updateSummary();
+        });
+        row.appendChild(btn);
+      });
+
+      // More button
+      const moreBtn = document.createElement('button');
+      moreBtn.className = 'minute-chip more';
+      moreBtn.textContent = state.showExtendedMinutes ? 'Less' : 'More';
+      moreBtn.addEventListener('click', () => {
+        state.showExtendedMinutes = !state.showExtendedMinutes;
+        renderMinutes();
+      });
+      row.appendChild(moreBtn);
+
+      // Extended minutes
+      extraMinutes.forEach(m => {
+        const btn = document.createElement('button');
+        btn.className = 'minute-chip';
+        btn.textContent = `:${m.toString().padStart(2, '0')}`;
+        if (state.selectedMinutes === m) {
+          btn.classList.add('selected');
+        }
+        btn.addEventListener('click', () => {
+          state.selectedMinutes = m;
+          renderMinutes();
+          updateSummary();
+        });
+        extended.appendChild(btn);
+      });
+
+      extended.classList.toggle('visible', state.showExtendedMinutes);
+    }
+
+    // AM/PM
     function renderAmPm() {
-      const ampmGrid = document.getElementById('ampmGrid');
-      ampmGrid.innerHTML = '';
+      const control = document.getElementById('ampmControl');
+      control.innerHTML = '';
+
       ['AM', 'PM'].forEach(period => {
         const btn = document.createElement('button');
         btn.className = 'ampm-btn';
@@ -644,95 +985,41 @@
         if (state.selectedAmPm === period) {
           btn.classList.add('selected');
         }
-        btn.addEventListener('click', () => selectAmPm(period));
-        ampmGrid.appendChild(btn);
+        btn.addEventListener('click', () => {
+          state.selectedAmPm = period;
+          renderAmPm();
+          updateSummary();
+        });
+        control.appendChild(btn);
       });
     }
 
-    function selectAmPm(period) {
-      state.selectedAmPm = period;
-      renderAmPm();
-      updateDisplay();
-      goToStep(4);
-    }
-
-    // Navigation
-    function goToStep(step) {
-      state.currentStep = step;
-
-      // Update panels
-      document.querySelectorAll('.step-panel').forEach((panel, i) => {
-        panel.classList.toggle('active', i === step);
-      });
-
-      // Update dots
-      document.querySelectorAll('.step-dot').forEach((dot, i) => {
-        dot.classList.remove('active', 'completed');
-        if (i === step && step < 4) {
-          dot.classList.add('active');
-        } else if (i < step || (step === 4 && i < 4)) {
-          dot.classList.add('completed');
-        }
-      });
-
-      // Update back button
-      document.getElementById('backBtn').classList.toggle('visible', step > 0);
-
-      // Update edit buttons
-      document.getElementById('editDate').classList.toggle('hidden', step < 1);
-      document.getElementById('editTime').classList.toggle('hidden', step < 2);
-
-      // Update final display
-      if (step === 4) {
-        updateFinalDisplay();
-      }
-    }
-
-    function goBack() {
-      if (state.currentStep > 0) {
-        goToStep(state.currentStep - 1);
-      }
-    }
-
-    // Display updates
-    function updateDisplay() {
-      const displayDate = document.getElementById('displayDate');
-      const displayTime = document.getElementById('displayTime');
+    // Summary
+    function updateSummary() {
+      const dateEl = document.getElementById('summaryDate');
+      const timeEl = document.getElementById('summaryTime');
 
       if (state.selectedDate) {
-        const options = { weekday: 'long', month: 'long', day: 'numeric' };
-        displayDate.textContent = state.selectedDate.toLocaleDateString('en-US', options);
-      } else {
-        displayDate.textContent = 'Select a date';
+        const dayName = dayNamesShort[state.selectedDate.getDay()];
+        const monthName = monthNamesShort[state.selectedDate.getMonth()];
+        const day = state.selectedDate.getDate();
+        dateEl.textContent = `${dayName}, ${monthName} ${day}`;
       }
 
-      if (state.selectedHour !== null) {
-        const minStr = state.selectedMinutes !== null ?
-          (state.selectedMinutes === 0 ? '00' : state.selectedMinutes) : '--';
-        const periodStr = state.selectedAmPm || '--';
-        displayTime.textContent = `${state.selectedHour}:${minStr} ${periodStr}`;
-      } else {
-        displayTime.textContent = '';
-      }
+      const minStr = state.selectedMinutes.toString().padStart(2, '0');
+      timeEl.textContent = `${state.selectedHour}:${minStr} ${state.selectedAmPm}`;
     }
 
-    function updateFinalDisplay() {
-      const finalDate = document.getElementById('finalDate');
-      const finalTime = document.getElementById('finalTime');
-
-      if (state.selectedDate) {
-        const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-        finalDate.textContent = state.selectedDate.toLocaleDateString('en-US', options);
-      }
-
-      if (state.selectedHour !== null && state.selectedMinutes !== null && state.selectedAmPm) {
-        const minStr = state.selectedMinutes === 0 ? '00' : state.selectedMinutes;
-        finalTime.textContent = `${state.selectedHour}:${minStr} ${state.selectedAmPm}`;
-      }
+    // Actions
+    function handleClose() {
+      console.log('Close pressed');
     }
 
-    // Confirm
-    function confirmSelection() {
+    function handleCancel() {
+      console.log('Cancel pressed');
+    }
+
+    function handleDone() {
       // Convert to 24-hour format
       let hour24 = state.selectedHour;
       if (state.selectedAmPm === 'AM') {
@@ -750,9 +1037,7 @@
         hour12: state.selectedHour,
         minutes: state.selectedMinutes,
         ampm: state.selectedAmPm,
-        formatted: `${state.selectedDate.toLocaleDateString('en-US', {
-          weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
-        })} at ${state.selectedHour}:${state.selectedMinutes === 0 ? '00' : state.selectedMinutes} ${state.selectedAmPm}`
+        formatted: `${dayNamesShort[state.selectedDate.getDay()]}, ${monthNamesShort[state.selectedDate.getMonth()]} ${state.selectedDate.getDate()} at ${state.selectedHour}:${state.selectedMinutes.toString().padStart(2, '0')} ${state.selectedAmPm}`
       };
 
       console.log('Selected DateTime:', result);
@@ -766,6 +1051,13 @@
 
       alert(`Selected: ${result.formatted}`);
     }
+
+    // Close month picker on overlay click
+    document.getElementById('monthPickerOverlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        closeMonthPicker();
+      }
+    });
 
     // Start
     init();
