@@ -2,23 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Select Date & Time</title>
   <style>
     :root {
-      --glass-bg: rgba(255, 255, 255, 0.72);
-      --glass-border: rgba(255, 255, 255, 0.5);
-      --glass-shadow: rgba(0, 0, 0, 0.08);
-      --chip-bg: rgba(255, 255, 255, 0.6);
-      --chip-hover: rgba(255, 255, 255, 0.85);
-      --chip-border: rgba(255, 255, 255, 0.8);
-      --accent: #7c3aed;
-      --accent-light: rgba(124, 58, 237, 0.12);
-      --accent-glow: rgba(124, 58, 237, 0.35);
-      --text-primary: #1a1a2e;
-      --text-secondary: #64648c;
-      --text-tertiary: #9898b0;
-      --today-ring: rgba(124, 58, 237, 0.4);
+      --red: #FF3B30;
+      --red-light: rgba(255, 59, 48, 0.12);
+      --red-glow: rgba(255, 59, 48, 0.35);
+      --blue: #007AFF;
+      --blue-light: rgba(0, 122, 255, 0.12);
+      --blue-glow: rgba(0, 122, 255, 0.35);
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.6);
+      --section-bg: rgba(255, 255, 255, 0.5);
+      --chip-bg: rgba(255, 255, 255, 0.7);
+      --chip-border: rgba(0, 0, 0, 0.06);
+      --text-primary: #000000;
+      --text-secondary: #3c3c43;
+      --text-tertiary: #8e8e93;
+      --separator: rgba(60, 60, 67, 0.12);
     }
 
     * {
@@ -30,135 +32,125 @@
 
     html, body {
       height: 100%;
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
-      background: linear-gradient(145deg, #c7d2fe 0%, #e0e7ff 30%, #fce7f3 70%, #fdf2f8 100%);
+      background: linear-gradient(180deg, #f2f2f7 0%, #e5e5ea 100%);
       display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
+      flex-direction: column;
+      min-height: 100%;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 
-    /* Glass Sheet */
-    .sheet {
+    /* Main container */
+    .picker {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+      gap: 12px;
+      max-width: 500px;
+      margin: 0 auto;
       width: 100%;
-      max-width: 400px;
-      background: var(--glass-bg);
-      backdrop-filter: blur(40px) saturate(180%);
-      -webkit-backdrop-filter: blur(40px) saturate(180%);
-      border-radius: 28px;
-      border: 1px solid var(--glass-border);
-      box-shadow:
-        0 0 0 0.5px rgba(255,255,255,0.6) inset,
-        0 1px 0 rgba(255,255,255,0.9) inset,
-        0 25px 60px -12px var(--glass-shadow),
-        0 12px 30px -8px rgba(0,0,0,0.12);
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* Specular sweep */
-    .sheet::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
-      pointer-events: none;
-      border-radius: 28px 28px 0 0;
     }
 
     /* Header */
     .header {
-      padding: 20px 20px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: relative;
-      z-index: 1;
+      padding: 8px 4px;
     }
 
-    .header-left {
+    .header-content {
       flex: 1;
     }
 
     .header-title {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      letter-spacing: 0.02em;
-      margin-bottom: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
     }
 
     .summary-pill {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: var(--chip-bg);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--chip-border);
-      border-radius: 20px;
-      padding: 8px 14px;
-      font-size: 15px;
+      gap: 8px;
+      font-size: 17px;
       font-weight: 600;
       color: var(--text-primary);
-      box-shadow:
-        0 2px 8px rgba(0,0,0,0.06),
-        0 0 0 0.5px rgba(255,255,255,0.5) inset;
     }
 
-    .summary-pill .dot {
-      width: 4px;
-      height: 4px;
-      background: var(--text-tertiary);
-      border-radius: 50%;
+    .summary-date {
+      color: var(--red);
+    }
+
+    .summary-time {
+      color: var(--blue);
+    }
+
+    .summary-pill .separator {
+      color: var(--text-tertiary);
+      font-weight: 400;
     }
 
     .close-btn {
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       border: none;
-      background: rgba(0,0,0,0.06);
+      background: rgba(60, 60, 67, 0.1);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       color: var(--text-secondary);
-      font-size: 18px;
-      transition: all 0.2s ease;
-    }
-
-    .close-btn:hover {
-      background: rgba(0,0,0,0.1);
+      font-size: 15px;
+      font-weight: 600;
     }
 
     .close-btn:active {
-      transform: scale(0.92);
+      background: rgba(60, 60, 67, 0.2);
     }
 
-    /* Body */
-    .body {
-      padding: 0 16px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    /* Section styling */
+    /* Section Card */
     .section {
-      background: rgba(255,255,255,0.45);
-      border-radius: 20px;
-      padding: 14px;
-      border: 1px solid rgba(255,255,255,0.6);
-      box-shadow:
-        0 4px 16px rgba(0,0,0,0.04),
-        0 0 0 0.5px rgba(255,255,255,0.4) inset;
+      background: var(--glass-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--separator);
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .section-title.date {
+      color: var(--red);
+    }
+
+    .section-title.time {
+      color: var(--blue);
+    }
+
+    .section-body {
+      padding: 12px;
     }
 
     /* Calendar Header */
@@ -166,12 +158,12 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .cal-nav {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border: none;
       background: transparent;
       border-radius: 8px;
@@ -179,55 +171,44 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      color: var(--text-secondary);
-      font-size: 16px;
-      transition: all 0.15s ease;
-    }
-
-    .cal-nav:hover {
-      background: rgba(0,0,0,0.05);
+      color: var(--red);
+      font-size: 20px;
+      font-weight: 300;
     }
 
     .cal-nav:active {
-      transform: scale(0.9);
+      background: var(--red-light);
     }
 
     .month-chip {
       display: flex;
       align-items: center;
-      gap: 4px;
-      background: var(--chip-bg);
-      border: 1px solid var(--chip-border);
-      border-radius: 12px;
-      padding: 6px 12px;
-      font-size: 14px;
+      gap: 6px;
+      background: var(--red-light);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 15px;
       font-weight: 600;
-      color: var(--text-primary);
+      color: var(--red);
       cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-    }
-
-    .month-chip:hover {
-      background: var(--chip-hover);
+      border: none;
     }
 
     .month-chip:active {
-      transform: scale(0.97);
+      opacity: 0.7;
     }
 
     .month-chip .chevron {
       font-size: 10px;
-      color: var(--text-tertiary);
-      margin-left: 2px;
+      opacity: 0.7;
     }
 
-    /* Weekday row */
+    /* Weekdays */
     .weekdays {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 2px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .weekday {
@@ -237,87 +218,75 @@
       color: var(--text-tertiary);
       padding: 6px 0;
       text-transform: uppercase;
-      letter-spacing: 0.03em;
     }
 
     /* Days grid */
     .days-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 3px;
+      gap: 4px;
     }
 
     .day-cell {
       aspect-ratio: 1;
       border: none;
       background: transparent;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 500;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 400;
       color: var(--text-primary);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
       position: relative;
-    }
-
-    .day-cell:hover:not(.empty):not(.selected) {
-      background: rgba(0,0,0,0.04);
+      transition: transform 0.15s ease;
     }
 
     .day-cell:active:not(.empty) {
-      transform: scale(0.88);
+      transform: scale(0.9);
     }
 
     .day-cell.empty {
       visibility: hidden;
     }
 
-    .day-cell.today:not(.selected)::after {
-      content: '';
-      position: absolute;
-      bottom: 4px;
-      width: 4px;
-      height: 4px;
-      background: var(--accent);
-      border-radius: 50%;
+    .day-cell.today:not(.selected) {
+      color: var(--red);
+      font-weight: 600;
     }
 
     .day-cell.selected {
-      background: var(--accent);
+      background: var(--red);
       color: white;
       font-weight: 600;
-      box-shadow:
-        0 4px 12px var(--accent-glow),
-        0 0 0 1px rgba(255,255,255,0.3) inset;
+      box-shadow: 0 2px 8px var(--red-glow);
     }
 
-    .day-cell.past:not(.selected) {
+    .day-cell.past:not(.selected):not(.today) {
       color: var(--text-tertiary);
     }
 
-    /* Time Section */
-    .time-section {
+    /* Time Section Layout */
+    .time-content {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
     .time-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .time-label {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
-      color: var(--text-secondary);
+      color: var(--text-tertiary);
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      width: 52px;
+      width: 40px;
       flex-shrink: 0;
     }
 
@@ -330,22 +299,15 @@
     }
 
     .hour-chip {
-      height: 38px;
+      height: 42px;
       border: none;
-      background: var(--chip-bg);
+      background: rgba(0, 122, 255, 0.08);
       border-radius: 10px;
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 500;
       color: var(--text-primary);
       cursor: pointer;
-      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-      border: 1px solid rgba(255,255,255,0.5);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-    }
-
-    .hour-chip:hover {
-      background: var(--chip-hover);
-      transform: translateY(-1px);
+      transition: transform 0.15s ease;
     }
 
     .hour-chip:active {
@@ -353,42 +315,30 @@
     }
 
     .hour-chip.selected {
-      background: var(--accent);
+      background: var(--blue);
       color: white;
       font-weight: 600;
-      border-color: transparent;
-      box-shadow:
-        0 4px 12px var(--accent-glow),
-        0 0 0 1px rgba(255,255,255,0.25) inset;
+      box-shadow: 0 2px 8px var(--blue-glow);
     }
 
-    /* Minutes row */
+    /* Minutes */
     .minutes-row {
       display: flex;
       gap: 6px;
       flex: 1;
-      flex-wrap: wrap;
     }
 
     .minute-chip {
       flex: 1;
-      min-width: 48px;
-      height: 38px;
+      height: 42px;
       border: none;
-      background: var(--chip-bg);
+      background: rgba(0, 122, 255, 0.08);
       border-radius: 10px;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 500;
       color: var(--text-primary);
       cursor: pointer;
-      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-      border: 1px solid rgba(255,255,255,0.5);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-    }
-
-    .minute-chip:hover {
-      background: var(--chip-hover);
-      transform: translateY(-1px);
+      transition: transform 0.15s ease;
     }
 
     .minute-chip:active {
@@ -396,153 +346,137 @@
     }
 
     .minute-chip.selected {
-      background: var(--accent);
+      background: var(--blue);
       color: white;
       font-weight: 600;
-      border-color: transparent;
-      box-shadow:
-        0 4px 12px var(--accent-glow),
-        0 0 0 1px rgba(255,255,255,0.25) inset;
+      box-shadow: 0 2px 8px var(--blue-glow);
     }
 
     .minute-chip.more {
-      background: rgba(0,0,0,0.04);
+      background: rgba(60, 60, 67, 0.08);
       color: var(--text-secondary);
-      font-size: 13px;
-      border-color: transparent;
+      font-size: 14px;
     }
 
-    .minute-chip.more:hover {
-      background: rgba(0,0,0,0.08);
-    }
-
-    /* Extended minutes row */
+    /* Extended minutes */
     .minutes-extended {
       display: none;
+      grid-template-columns: repeat(4, 1fr);
       gap: 6px;
-      flex-wrap: wrap;
-      margin-top: 6px;
+      margin-left: 52px;
     }
 
     .minutes-extended.visible {
-      display: flex;
+      display: grid;
     }
 
     .minutes-extended .minute-chip {
-      flex: 0 0 calc(25% - 5px);
+      flex: none;
     }
 
-    /* AM/PM Segmented Control */
-    .ampm-control {
+    /* AM/PM Control - Much wider */
+    .ampm-row {
       display: flex;
-      background: rgba(0,0,0,0.05);
-      border-radius: 10px;
-      padding: 3px;
-      gap: 2px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .ampm-control {
+      flex: 1;
+      display: flex;
+      background: rgba(0, 122, 255, 0.1);
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
     }
 
     .ampm-btn {
       flex: 1;
-      height: 32px;
+      height: 44px;
       border: none;
       background: transparent;
-      border-radius: 8px;
-      font-size: 13px;
+      border-radius: 10px;
+      font-size: 17px;
       font-weight: 600;
-      color: var(--text-secondary);
+      color: var(--blue);
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
-    .ampm-btn:hover:not(.selected) {
-      color: var(--text-primary);
+    .ampm-btn.selected {
+      background: var(--blue);
+      color: white;
+      box-shadow: 0 2px 8px var(--blue-glow);
     }
 
-    .ampm-btn.selected {
-      background: white;
-      color: var(--text-primary);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    .ampm-btn:active:not(.selected) {
+      background: rgba(0, 122, 255, 0.15);
     }
 
     /* Action bar */
     .action-bar {
-      padding: 12px 16px 16px;
       display: flex;
       gap: 10px;
+      padding: 8px 0;
     }
 
     .btn-cancel {
       flex: 1;
       height: 50px;
       border: none;
-      background: rgba(0,0,0,0.05);
+      background: rgba(60, 60, 67, 0.08);
       border-radius: 14px;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 600;
       color: var(--text-secondary);
       cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .btn-cancel:hover {
-      background: rgba(0,0,0,0.08);
     }
 
     .btn-cancel:active {
-      transform: scale(0.98);
+      background: rgba(60, 60, 67, 0.15);
     }
 
     .btn-done {
-      flex: 2;
+      flex: 1.5;
       height: 50px;
       border: none;
-      background: var(--accent);
+      background: var(--blue);
       border-radius: 14px;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 600;
       color: white;
       cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow:
-        0 4px 16px var(--accent-glow),
-        0 0 0 1px rgba(255,255,255,0.15) inset;
-    }
-
-    .btn-done:hover {
-      filter: brightness(1.05);
-      transform: translateY(-1px);
+      box-shadow: 0 4px 12px var(--blue-glow);
     }
 
     .btn-done:active {
-      transform: scale(0.98);
+      opacity: 0.85;
     }
 
-    /* Month/Year Picker Modal */
-    .month-picker-overlay {
+    /* Month Picker Overlay */
+    .overlay {
       display: none;
-      position: absolute;
+      position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.2);
-      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.4);
       z-index: 100;
-      border-radius: 28px;
       align-items: center;
       justify-content: center;
+      padding: 20px;
     }
 
-    .month-picker-overlay.visible {
+    .overlay.visible {
       display: flex;
     }
 
     .month-picker {
       background: var(--glass-bg);
       backdrop-filter: blur(30px);
-      border-radius: 20px;
+      border-radius: 16px;
       padding: 16px;
-      border: 1px solid var(--glass-border);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-      width: calc(100% - 40px);
+      width: 100%;
       max-width: 320px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
 
     .month-picker-header {
@@ -555,40 +489,37 @@
     .year-nav {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
     }
 
     .year-nav button {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border: none;
-      background: rgba(0,0,0,0.05);
+      background: var(--red-light);
       border-radius: 8px;
       cursor: pointer;
-      color: var(--text-secondary);
-      font-size: 14px;
+      color: var(--red);
+      font-size: 18px;
+      font-weight: 300;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .year-nav button:hover {
-      background: rgba(0,0,0,0.08);
-    }
-
     .year-nav span {
-      font-size: 17px;
-      font-weight: 600;
+      font-size: 20px;
+      font-weight: 700;
       color: var(--text-primary);
       min-width: 60px;
       text-align: center;
     }
 
-    .month-picker-close {
-      width: 28px;
-      height: 28px;
+    .picker-close {
+      width: 30px;
+      height: 30px;
       border: none;
-      background: rgba(0,0,0,0.06);
+      background: rgba(60, 60, 67, 0.1);
       border-radius: 50%;
       cursor: pointer;
       color: var(--text-secondary);
@@ -602,67 +533,67 @@
     }
 
     .month-option {
-      height: 40px;
+      height: 44px;
       border: none;
-      background: var(--chip-bg);
+      background: rgba(255, 59, 48, 0.08);
       border-radius: 10px;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 500;
       color: var(--text-primary);
       cursor: pointer;
-      transition: all 0.15s ease;
-      border: 1px solid rgba(255,255,255,0.4);
     }
 
-    .month-option:hover {
-      background: var(--chip-hover);
+    .month-option:active {
+      opacity: 0.7;
     }
 
     .month-option.selected {
-      background: var(--accent);
+      background: var(--red);
       color: white;
-      border-color: transparent;
+      font-weight: 600;
     }
 
-    /* Slide animation for calendar */
+    /* Slide animations */
     .days-grid.slide-left {
-      animation: slideLeft 0.25s ease;
+      animation: slideLeft 0.2s ease-out;
     }
 
     .days-grid.slide-right {
-      animation: slideRight 0.25s ease;
+      animation: slideRight 0.2s ease-out;
     }
 
     @keyframes slideLeft {
-      from { opacity: 0; transform: translateX(20px); }
+      from { opacity: 0; transform: translateX(16px); }
       to { opacity: 1; transform: translateX(0); }
     }
 
     @keyframes slideRight {
-      from { opacity: 0; transform: translateX(-20px); }
+      from { opacity: 0; transform: translateX(-16px); }
       to { opacity: 1; transform: translateX(0); }
     }
   </style>
 </head>
 <body>
-  <div class="sheet">
+  <div class="picker">
     <!-- Header -->
     <div class="header">
-      <div class="header-left">
-        <div class="header-title">Select date and time</div>
-        <div class="summary-pill" id="summaryPill">
-          <span id="summaryDate">Sat, Dec 13</span>
-          <span class="dot"></span>
-          <span id="summaryTime">8:00 AM</span>
+      <div class="header-content">
+        <div class="header-title">Selected</div>
+        <div class="summary-pill">
+          <span class="summary-date" id="summaryDate">Sat, Dec 13</span>
+          <span class="separator">·</span>
+          <span class="summary-time" id="summaryTime">11:15 AM</span>
         </div>
       </div>
       <button class="close-btn" onclick="handleClose()">✕</button>
     </div>
 
-    <!-- Body -->
-    <div class="body">
-      <!-- Calendar Section -->
-      <div class="section">
+    <!-- Date Section -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title date">Date</span>
+      </div>
+      <div class="section-body">
         <div class="cal-header">
           <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
           <button class="month-chip" onclick="openMonthPicker()">
@@ -682,21 +613,28 @@
         </div>
         <div class="days-grid" id="daysGrid"></div>
       </div>
+    </div>
 
-      <!-- Time Section -->
-      <div class="section time-section">
-        <div class="time-row">
-          <span class="time-label">Hour</span>
-          <div class="hour-grid" id="hourGrid"></div>
-        </div>
-        <div class="time-row">
-          <span class="time-label">Min</span>
-          <div class="minutes-row" id="minutesRow"></div>
-        </div>
-        <div class="minutes-extended" id="minutesExtended"></div>
-        <div class="time-row">
-          <span class="time-label"></span>
-          <div class="ampm-control" id="ampmControl"></div>
+    <!-- Time Section -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title time">Time</span>
+      </div>
+      <div class="section-body">
+        <div class="time-content">
+          <div class="time-row">
+            <span class="time-label">Hour</span>
+            <div class="hour-grid" id="hourGrid"></div>
+          </div>
+          <div class="time-row">
+            <span class="time-label">Min</span>
+            <div class="minutes-row" id="minutesRow"></div>
+          </div>
+          <div class="minutes-extended" id="minutesExtended"></div>
+          <div class="ampm-row">
+            <span class="time-label"></span>
+            <div class="ampm-control" id="ampmControl"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -706,32 +644,31 @@
       <button class="btn-cancel" onclick="handleCancel()">Cancel</button>
       <button class="btn-done" onclick="handleDone()">Done</button>
     </div>
+  </div>
 
-    <!-- Month Picker Overlay -->
-    <div class="month-picker-overlay" id="monthPickerOverlay">
-      <div class="month-picker">
-        <div class="month-picker-header">
-          <div class="year-nav">
-            <button onclick="changePickerYear(-1)">‹</button>
-            <span id="pickerYear">2025</span>
-            <button onclick="changePickerYear(1)">›</button>
-          </div>
-          <button class="month-picker-close" onclick="closeMonthPicker()">✕</button>
+  <!-- Month Picker Overlay -->
+  <div class="overlay" id="monthPickerOverlay">
+    <div class="month-picker">
+      <div class="month-picker-header">
+        <div class="year-nav">
+          <button onclick="changePickerYear(-1)">‹</button>
+          <span id="pickerYear">2025</span>
+          <button onclick="changePickerYear(1)">›</button>
         </div>
-        <div class="months-grid" id="monthsGrid"></div>
+        <button class="picker-close" onclick="closeMonthPicker()">✕</button>
       </div>
+      <div class="months-grid" id="monthsGrid"></div>
     </div>
   </div>
 
   <script>
-    // State
     const state = {
       viewMonth: new Date().getMonth(),
       viewYear: new Date().getFullYear(),
       pickerYear: new Date().getFullYear(),
       selectedDate: new Date(),
-      selectedHour: 8,
-      selectedMinutes: 0,
+      selectedHour: 11,
+      selectedMinutes: 15,
       selectedAmPm: 'AM',
       showExtendedMinutes: false
     };
@@ -743,9 +680,7 @@
     const dayNamesShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const today = new Date();
 
-    // Initialize with smart defaults
     function init() {
-      // Set default time to next quarter hour
       const now = new Date();
       const minutes = now.getMinutes();
       const nextQuarter = Math.ceil(minutes / 15) * 15;
@@ -778,17 +713,15 @@
       updateSummary();
     }
 
-    // Calendar
     function renderCalendar(direction = null) {
       const monthLabel = document.getElementById('monthLabel');
       const daysGrid = document.getElementById('daysGrid');
 
       monthLabel.textContent = `${monthNames[state.viewMonth]} ${state.viewYear}`;
 
-      // Animation
       if (direction) {
         daysGrid.classList.remove('slide-left', 'slide-right');
-        void daysGrid.offsetWidth; // Trigger reflow
+        void daysGrid.offsetWidth;
         daysGrid.classList.add(direction === 1 ? 'slide-left' : 'slide-right');
       }
 
@@ -799,14 +732,12 @@
       const startingDay = firstDay.getDay();
       const totalDays = lastDay.getDate();
 
-      // Empty cells
       for (let i = 0; i < startingDay; i++) {
         const cell = document.createElement('button');
         cell.className = 'day-cell empty';
         daysGrid.appendChild(cell);
       }
 
-      // Day cells
       for (let day = 1; day <= totalDays; day++) {
         const cell = document.createElement('button');
         cell.className = 'day-cell';
@@ -814,14 +745,12 @@
 
         const cellDate = new Date(state.viewYear, state.viewMonth, day);
 
-        // Today indicator
         if (day === today.getDate() &&
             state.viewMonth === today.getMonth() &&
             state.viewYear === today.getFullYear()) {
           cell.classList.add('today');
         }
 
-        // Selected state
         if (state.selectedDate &&
             day === state.selectedDate.getDate() &&
             state.viewMonth === state.selectedDate.getMonth() &&
@@ -829,7 +758,6 @@
           cell.classList.add('selected');
         }
 
-        // Past dates (lighter)
         if (cellDate < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
           cell.classList.add('past');
         }
@@ -857,7 +785,6 @@
       updateSummary();
     }
 
-    // Month Picker
     function openMonthPicker() {
       state.pickerYear = state.viewYear;
       document.getElementById('monthPickerOverlay').classList.add('visible');
@@ -898,7 +825,6 @@
       renderMonthPicker();
     }
 
-    // Hours
     function renderHours() {
       const grid = document.getElementById('hourGrid');
       grid.innerHTML = '';
@@ -919,7 +845,6 @@
       }
     }
 
-    // Minutes
     function renderMinutes() {
       const row = document.getElementById('minutesRow');
       const extended = document.getElementById('minutesExtended');
@@ -944,7 +869,6 @@
         row.appendChild(btn);
       });
 
-      // More button
       const moreBtn = document.createElement('button');
       moreBtn.className = 'minute-chip more';
       moreBtn.textContent = state.showExtendedMinutes ? 'Less' : 'More';
@@ -954,7 +878,6 @@
       });
       row.appendChild(moreBtn);
 
-      // Extended minutes
       extraMinutes.forEach(m => {
         const btn = document.createElement('button');
         btn.className = 'minute-chip';
@@ -973,7 +896,6 @@
       extended.classList.toggle('visible', state.showExtendedMinutes);
     }
 
-    // AM/PM
     function renderAmPm() {
       const control = document.getElementById('ampmControl');
       control.innerHTML = '';
@@ -994,7 +916,6 @@
       });
     }
 
-    // Summary
     function updateSummary() {
       const dateEl = document.getElementById('summaryDate');
       const timeEl = document.getElementById('summaryTime');
@@ -1010,17 +931,15 @@
       timeEl.textContent = `${state.selectedHour}:${minStr} ${state.selectedAmPm}`;
     }
 
-    // Actions
     function handleClose() {
-      console.log('Close pressed');
+      console.log('Close');
     }
 
     function handleCancel() {
-      console.log('Cancel pressed');
+      console.log('Cancel');
     }
 
     function handleDone() {
-      // Convert to 24-hour format
       let hour24 = state.selectedHour;
       if (state.selectedAmPm === 'AM') {
         if (hour24 === 12) hour24 = 0;
@@ -1040,26 +959,23 @@
         formatted: `${dayNamesShort[state.selectedDate.getDay()]}, ${monthNamesShort[state.selectedDate.getMonth()]} ${state.selectedDate.getDate()} at ${state.selectedHour}:${state.selectedMinutes.toString().padStart(2, '0')} ${state.selectedAmPm}`
       };
 
-      console.log('Selected DateTime:', result);
+      console.log('Selected:', result);
 
-      // For Siri Shortcuts integration
       const encoded = encodeURIComponent(JSON.stringify(result));
       const shortcutName = "Handle DateTime";
 
-      // Uncomment to trigger shortcut:
+      // Uncomment for Shortcuts integration:
       // window.location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(shortcutName)}&input=${encoded}`;
 
       alert(`Selected: ${result.formatted}`);
     }
 
-    // Close month picker on overlay click
     document.getElementById('monthPickerOverlay').addEventListener('click', (e) => {
       if (e.target === e.currentTarget) {
         closeMonthPicker();
       }
     });
 
-    // Start
     init();
   </script>
 </body>
