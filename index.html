@@ -1,982 +1,240 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="theme-light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Select Date & Time</title>
-  <style>
-    :root {
-      --red: #FF3B30;
-      --red-light: rgba(255, 59, 48, 0.12);
-      --red-glow: rgba(255, 59, 48, 0.35);
-      --blue: #007AFF;
-      --blue-light: rgba(0, 122, 255, 0.12);
-      --blue-glow: rgba(0, 122, 255, 0.35);
-      --glass-bg: rgba(255, 255, 255, 0.85);
-      --glass-border: rgba(255, 255, 255, 0.6);
-      --section-bg: rgba(255, 255, 255, 0.5);
-      --chip-bg: rgba(255, 255, 255, 0.7);
-      --chip-border: rgba(0, 0, 0, 0.06);
-      --text-primary: #000000;
-      --text-secondary: #3c3c43;
-      --text-tertiary: #8e8e93;
-      --separator: rgba(60, 60, 67, 0.12);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html, body {
-      height: 100%;
-      overflow-x: hidden;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
-      background: linear-gradient(180deg, #f2f2f7 0%, #e5e5ea 100%);
-      display: flex;
-      flex-direction: column;
-      min-height: 100%;
-      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-    }
-
-    /* Main container */
-    .picker {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 12px;
-      gap: 12px;
-      max-width: 500px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    /* Header */
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 4px;
-    }
-
-    .header-content {
-      flex: 1;
-    }
-
-    .header-title {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-tertiary);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 4px;
-    }
-
-    .summary-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .summary-date {
-      color: var(--red);
-    }
-
-    .summary-time {
-      color: var(--blue);
-    }
-
-    .summary-pill .separator {
-      color: var(--text-tertiary);
-      font-weight: 400;
-    }
-
-    .close-btn {
-      width: 30px;
-      height: 30px;
-      border: none;
-      background: rgba(60, 60, 67, 0.1);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--text-secondary);
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .close-btn:active {
-      background: rgba(60, 60, 67, 0.2);
-    }
-
-    /* Section Card */
-    .section {
-      background: var(--glass-bg);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--separator);
-    }
-
-    .section-title {
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .section-title.date {
-      color: var(--red);
-    }
-
-    .section-title.time {
-      color: var(--blue);
-    }
-
-    .section-body {
-      padding: 12px;
-    }
-
-    /* Calendar Header */
-    .cal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .cal-nav {
-      width: 32px;
-      height: 32px;
-      border: none;
-      background: transparent;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--red);
-      font-size: 20px;
-      font-weight: 300;
-    }
-
-    .cal-nav:active {
-      background: var(--red-light);
-    }
-
-    .month-chip {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--red-light);
-      border-radius: 10px;
-      padding: 8px 14px;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--red);
-      cursor: pointer;
-      border: none;
-    }
-
-    .month-chip:active {
-      opacity: 0.7;
-    }
-
-    .month-chip .chevron {
-      font-size: 10px;
-      opacity: 0.7;
-    }
-
-    /* Weekdays */
-    .weekdays {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 2px;
-      margin-bottom: 4px;
-    }
-
-    .weekday {
-      text-align: center;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-tertiary);
-      padding: 6px 0;
-      text-transform: uppercase;
-    }
-
-    /* Days grid */
-    .days-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-    }
-
-    .day-cell {
-      aspect-ratio: 1;
-      border: none;
-      background: transparent;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 400;
-      color: var(--text-primary);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      transition: transform 0.15s ease;
-    }
-
-    .day-cell:active:not(.empty) {
-      transform: scale(0.9);
-    }
-
-    .day-cell.empty {
-      visibility: hidden;
-    }
-
-    .day-cell.today:not(.selected) {
-      color: var(--red);
-      font-weight: 600;
-    }
-
-    .day-cell.selected {
-      background: var(--red);
-      color: white;
-      font-weight: 600;
-      box-shadow: 0 2px 8px var(--red-glow);
-    }
-
-    .day-cell.past:not(.selected):not(.today) {
-      color: var(--text-tertiary);
-    }
-
-    /* Time Section Layout */
-    .time-content {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .time-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .time-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-tertiary);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      width: 40px;
-      flex-shrink: 0;
-    }
-
-    /* Hour grid - 4x3 */
-    .hour-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      flex: 1;
-    }
-
-    .hour-chip {
-      height: 42px;
-      border: none;
-      background: rgba(0, 122, 255, 0.08);
-      border-radius: 10px;
-      font-size: 17px;
-      font-weight: 500;
-      color: var(--text-primary);
-      cursor: pointer;
-      transition: transform 0.15s ease;
-    }
-
-    .hour-chip:active {
-      transform: scale(0.94);
-    }
-
-    .hour-chip.selected {
-      background: var(--blue);
-      color: white;
-      font-weight: 600;
-      box-shadow: 0 2px 8px var(--blue-glow);
-    }
-
-    /* Minutes */
-    .minutes-row {
-      display: flex;
-      gap: 6px;
-      flex: 1;
-    }
-
-    .minute-chip {
-      flex: 1;
-      height: 42px;
-      border: none;
-      background: rgba(0, 122, 255, 0.08);
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--text-primary);
-      cursor: pointer;
-      transition: transform 0.15s ease;
-    }
-
-    .minute-chip:active {
-      transform: scale(0.94);
-    }
-
-    .minute-chip.selected {
-      background: var(--blue);
-      color: white;
-      font-weight: 600;
-      box-shadow: 0 2px 8px var(--blue-glow);
-    }
-
-    .minute-chip.more {
-      background: rgba(60, 60, 67, 0.08);
-      color: var(--text-secondary);
-      font-size: 14px;
-    }
-
-    /* Extended minutes */
-    .minutes-extended {
-      display: none;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      margin-left: 52px;
-    }
-
-    .minutes-extended.visible {
-      display: grid;
-    }
-
-    .minutes-extended .minute-chip {
-      flex: none;
-    }
-
-    /* AM/PM Control - Much wider */
-    .ampm-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .ampm-control {
-      flex: 1;
-      display: flex;
-      background: rgba(0, 122, 255, 0.1);
-      border-radius: 12px;
-      padding: 4px;
-      gap: 4px;
-    }
-
-    .ampm-btn {
-      flex: 1;
-      height: 44px;
-      border: none;
-      background: transparent;
-      border-radius: 10px;
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--blue);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .ampm-btn.selected {
-      background: var(--blue);
-      color: white;
-      box-shadow: 0 2px 8px var(--blue-glow);
-    }
-
-    .ampm-btn:active:not(.selected) {
-      background: rgba(0, 122, 255, 0.15);
-    }
-
-    /* Action bar */
-    .action-bar {
-      display: flex;
-      gap: 10px;
-      padding: 8px 0;
-    }
-
-    .btn-cancel {
-      flex: 1;
-      height: 50px;
-      border: none;
-      background: rgba(60, 60, 67, 0.08);
-      border-radius: 14px;
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      cursor: pointer;
-    }
-
-    .btn-cancel:active {
-      background: rgba(60, 60, 67, 0.15);
-    }
-
-    .btn-done {
-      flex: 1.5;
-      height: 50px;
-      border: none;
-      background: var(--blue);
-      border-radius: 14px;
-      font-size: 17px;
-      font-weight: 600;
-      color: white;
-      cursor: pointer;
-      box-shadow: 0 4px 12px var(--blue-glow);
-    }
-
-    .btn-done:active {
-      opacity: 0.85;
-    }
-
-    /* Month Picker Overlay */
-    .overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .overlay.visible {
-      display: flex;
-    }
-
-    .month-picker {
-      background: var(--glass-bg);
-      backdrop-filter: blur(30px);
-      border-radius: 16px;
-      padding: 16px;
-      width: 100%;
-      max-width: 320px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    }
-
-    .month-picker-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-
-    .year-nav {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .year-nav button {
-      width: 32px;
-      height: 32px;
-      border: none;
-      background: var(--red-light);
-      border-radius: 8px;
-      cursor: pointer;
-      color: var(--red);
-      font-size: 18px;
-      font-weight: 300;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .year-nav span {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text-primary);
-      min-width: 60px;
-      text-align: center;
-    }
-
-    .picker-close {
-      width: 30px;
-      height: 30px;
-      border: none;
-      background: rgba(60, 60, 67, 0.1);
-      border-radius: 50%;
-      cursor: pointer;
-      color: var(--text-secondary);
-      font-size: 14px;
-    }
-
-    .months-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .month-option {
-      height: 44px;
-      border: none;
-      background: rgba(255, 59, 48, 0.08);
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text-primary);
-      cursor: pointer;
-    }
-
-    .month-option:active {
-      opacity: 0.7;
-    }
-
-    .month-option.selected {
-      background: var(--red);
-      color: white;
-      font-weight: 600;
-    }
-
-    /* Slide animations */
-    .days-grid.slide-left {
-      animation: slideLeft 0.2s ease-out;
-    }
-
-    .days-grid.slide-right {
-      animation: slideRight 0.2s ease-out;
-    }
-
-    @keyframes slideLeft {
-      from { opacity: 0; transform: translateX(16px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-
-    @keyframes slideRight {
-      from { opacity: 0; transform: translateX(-16px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-  </style>
+  <title>Glassmorphic UI Kit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/glass.css">
 </head>
 <body>
-  <div class="picker">
-    <!-- Header -->
-    <div class="header">
-      <div class="header-content">
-        <div class="header-title">Selected</div>
-        <div class="summary-pill">
-          <span class="summary-date" id="summaryDate">Sat, Dec 13</span>
-          <span class="separator">·</span>
-          <span class="summary-time" id="summaryTime">11:15 AM</span>
+  <div class="page-frame">
+    <header class="hero">
+      <div class="hero-copy">
+        <h1>Glassmorphic UI Elements</h1>
+        <p>
+          A reusable collection of glass surfaces, shapes, controls, and icon shells crafted for modern web apps.
+          Drop these into any page, swap the theme toggle, and pair with your own icons for an instantly premium look.
+        </p>
+        <div class="actions">
+          <button class="button" id="themeButton">Toggle light / dark</button>
+          <button class="button secondary" onclick="copySnippet()">Copy CSS snippet</button>
         </div>
       </div>
-      <button class="close-btn" onclick="handleClose()">✕</button>
-    </div>
-
-    <!-- Date Section -->
-    <div class="section">
-      <div class="section-header">
-        <span class="section-title date">Date</span>
-      </div>
-      <div class="section-body">
-        <div class="cal-header">
-          <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
-          <button class="month-chip" onclick="openMonthPicker()">
-            <span id="monthLabel">December 2025</span>
-            <span class="chevron">▼</span>
-          </button>
-          <button class="cal-nav" onclick="changeMonth(1)">›</button>
+      <div class="showcase-card">
+        <div class="section-title">
+          <span>Design Tokens</span>
+          <label class="theme-toggle">
+            <input type="checkbox" id="themeSwitch">
+            <span>Dark mode</span>
+          </label>
         </div>
-        <div class="weekdays">
-          <div class="weekday">Sun</div>
-          <div class="weekday">Mon</div>
-          <div class="weekday">Tue</div>
-          <div class="weekday">Wed</div>
-          <div class="weekday">Thu</div>
-          <div class="weekday">Fri</div>
-          <div class="weekday">Sat</div>
-        </div>
-        <div class="days-grid" id="daysGrid"></div>
-      </div>
-    </div>
-
-    <!-- Time Section -->
-    <div class="section">
-      <div class="section-header">
-        <span class="section-title time">Time</span>
-      </div>
-      <div class="section-body">
-        <div class="time-content">
-          <div class="time-row">
-            <span class="time-label">Hour</span>
-            <div class="hour-grid" id="hourGrid"></div>
+        <div class="meta-bar">
+          <div class="meta-tile">
+            <div class="meta-title">Blur</div>
+            <div class="meta-value">22px backdrop</div>
           </div>
-          <div class="time-row">
-            <span class="time-label">Min</span>
-            <div class="minutes-row" id="minutesRow"></div>
+          <div class="meta-tile">
+            <div class="meta-title">Borders</div>
+            <div class="meta-value">Subtle double line</div>
           </div>
-          <div class="minutes-extended" id="minutesExtended"></div>
-          <div class="ampm-row">
-            <span class="time-label"></span>
-            <div class="ampm-control" id="ampmControl"></div>
+          <div class="meta-tile">
+            <div class="meta-title">Lighting</div>
+            <div class="meta-value">Top-left highlight</div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Action Bar -->
-    <div class="action-bar">
-      <button class="btn-cancel" onclick="handleCancel()">Cancel</button>
-      <button class="btn-done" onclick="handleDone()">Done</button>
-    </div>
-  </div>
-
-  <!-- Month Picker Overlay -->
-  <div class="overlay" id="monthPickerOverlay">
-    <div class="month-picker">
-      <div class="month-picker-header">
-        <div class="year-nav">
-          <button onclick="changePickerYear(-1)">‹</button>
-          <span id="pickerYear">2025</span>
-          <button onclick="changePickerYear(1)">›</button>
+        <div class="badges">
+          <span class="badge">Pills</span>
+          <span class="badge">Icons</span>
+          <span class="badge">Controls</span>
+          <span class="badge">Light + Dark</span>
+          <span class="badge">Gradients</span>
         </div>
-        <button class="picker-close" onclick="closeMonthPicker()">✕</button>
       </div>
-      <div class="months-grid" id="monthsGrid"></div>
-    </div>
+    </header>
+
+    <section class="showcase-card">
+      <div class="section-title">
+        <span>Core Shapes</span>
+        <small>Light surfaces, frosted borders, subtle shadow</small>
+      </div>
+      <div class="glass-grid">
+        <div>
+          <div class="glass-surface shape-pill"></div>
+          <div class="shape-label">Pill</div>
+        </div>
+        <div>
+          <div class="glass-surface shape-oval"></div>
+          <div class="shape-label">Oval</div>
+        </div>
+        <div>
+          <div class="glass-surface shape-circle"></div>
+          <div class="shape-label">Circle</div>
+        </div>
+        <div>
+          <div class="glass-surface shape-square"></div>
+          <div class="shape-label">Soft square</div>
+        </div>
+        <div>
+          <div class="glass-surface shape-rounded"></div>
+          <div class="shape-label">Rounded square</div>
+        </div>
+        <div>
+          <div class="glass-surface shape-rectangle"></div>
+          <div class="shape-label">Rectangle</div>
+        </div>
+        <div>
+          <div class="glass-surface shape-diamond"></div>
+          <div class="shape-label">Diamond</div>
+        </div>
+        <div>
+          <div class="glass-surface shape-teardrop"></div>
+          <div class="shape-label">Teardrop</div>
+        </div>
+        <div>
+          <div class="glass-surface shape-triangle"></div>
+          <div class="shape-label">Triangle</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="showcase-card">
+      <div class="section-title">
+        <span>Dark Surfaces</span>
+        <small>Contrast ready overlays</small>
+      </div>
+      <div class="helper-bar">
+        <p>Use <code>.theme-dark</code> on <code>&lt;html&gt;</code> to flip the palette.</p>
+      </div>
+      <div class="glass-grid">
+        <div>
+          <div class="glass-surface shape-pill"></div>
+          <div class="shape-label">Pill</div>
+        </div>
+        <div>
+          <div class="glass-surface shape-circle"></div>
+          <div class="shape-label">Circle</div>
+        </div>
+        <div>
+          <div class="glass-surface shape-square"></div>
+          <div class="shape-label">Square</div>
+        </div>
+        <div>
+          <div class="glass-surface shape-rectangle"></div>
+          <div class="shape-label">Rectangle</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="showcase-card">
+      <div class="section-title">
+        <span>Icon Capsules</span>
+        <small>Drop any SVG or emoji inside</small>
+      </div>
+      <div class="glass-grid">
+        <div class="icon-chip"><div class="swatch" style="--fill: linear-gradient(180deg, #f59e0b, #f97316);"></div></div>
+        <div class="icon-chip"><div class="swatch" style="--fill: linear-gradient(180deg, #22c55e, #16a34a);"></div></div>
+        <div class="icon-chip"><div class="swatch" style="--fill: linear-gradient(180deg, #3b82f6, #2563eb);"></div></div>
+        <div class="icon-chip"><div class="swatch" style="--fill: linear-gradient(180deg, #a855f7, #7e22ce);"></div></div>
+        <div class="icon-chip"><div class="swatch" style="--fill: linear-gradient(180deg, #f43f5e, #e11d48);"></div></div>
+      </div>
+      <div class="helper-bar">
+        <span>Tip: pair with brand icons to recreate the glossy badges from the reference set.</span>
+      </div>
+    </section>
+
+    <section class="showcase-card">
+      <div class="section-title">
+        <span>Controls</span>
+        <small>Buttons, toggle, slider, and inputs in glass</small>
+      </div>
+      <div class="glass-grid">
+        <div class="glass-control">
+          <button class="button">Primary glass button</button>
+          <button class="button secondary">Secondary ghost</button>
+        </div>
+        <div class="glass-control">
+          <label class="section-title" style="margin:0;">
+            <span>Toggle</span>
+          </label>
+          <div class="glass-toggle" data-on="true" id="demoToggle">
+            <div class="thumb"></div>
+          </div>
+        </div>
+        <div class="glass-control">
+          <label class="section-title" style="margin:0;">
+            <span>Slider</span>
+          </label>
+          <div class="glass-slider">
+            <div class="fill"></div>
+            <div class="handle"></div>
+          </div>
+        </div>
+        <div class="glass-control">
+          <label class="section-title" style="margin:0;">
+            <span>Input</span>
+          </label>
+          <input class="glass-input" placeholder="Type within a frosted shell" />
+        </div>
+      </div>
+    </section>
+
+    <section class="showcase-card">
+      <div class="section-title">
+        <span>Palette & Tokens</span>
+        <small>Use these ramps to tint fills</small>
+      </div>
+      <div class="palette">
+        <div class="swatch-card">
+          <div class="meta-title">Sky</div>
+          <div class="swatch" style="background: linear-gradient(120deg, #60a5fa, #2563eb);"></div>
+        </div>
+        <div class="swatch-card">
+          <div class="meta-title">Sunrise</div>
+          <div class="swatch" style="background: linear-gradient(120deg, #f59e0b, #f97316);"></div>
+        </div>
+        <div class="swatch-card">
+          <div class="meta-title">Aurora</div>
+          <div class="swatch" style="background: linear-gradient(120deg, #22c55e, #14b8a6);"></div>
+        </div>
+        <div class="swatch-card">
+          <div class="meta-title">Magenta</div>
+          <div class="swatch" style="background: linear-gradient(120deg, #f43f5e, #db2777);"></div>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script>
-    const state = {
-      viewMonth: new Date().getMonth(),
-      viewYear: new Date().getFullYear(),
-      pickerYear: new Date().getFullYear(),
-      selectedDate: new Date(),
-      selectedHour: 11,
-      selectedMinutes: 15,
-      selectedAmPm: 'AM',
-      showExtendedMinutes: false
-    };
+    const root = document.documentElement;
+    const themeSwitch = document.getElementById('themeSwitch');
+    const themeButton = document.getElementById('themeButton');
+    const toggle = document.getElementById('demoToggle');
 
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-                        "July", "August", "September", "October", "November", "December"];
-    const monthNamesShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const dayNamesShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const today = new Date();
-
-    function init() {
-      const now = new Date();
-      const minutes = now.getMinutes();
-      const nextQuarter = Math.ceil(minutes / 15) * 15;
-
-      if (nextQuarter >= 60) {
-        now.setHours(now.getHours() + 1);
-        state.selectedMinutes = 0;
+    function setTheme(dark) {
+      if (dark) {
+        root.classList.add('theme-dark');
       } else {
-        state.selectedMinutes = nextQuarter;
+        root.classList.remove('theme-dark');
       }
-
-      let hour = now.getHours();
-      if (hour >= 12) {
-        state.selectedAmPm = 'PM';
-        if (hour > 12) hour -= 12;
-      } else {
-        state.selectedAmPm = 'AM';
-        if (hour === 0) hour = 12;
-      }
-      state.selectedHour = hour;
-
-      state.selectedDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      state.viewMonth = state.selectedDate.getMonth();
-      state.viewYear = state.selectedDate.getFullYear();
-
-      renderCalendar();
-      renderHours();
-      renderMinutes();
-      renderAmPm();
-      updateSummary();
+      themeSwitch.checked = dark;
     }
 
-    function renderCalendar(direction = null) {
-      const monthLabel = document.getElementById('monthLabel');
-      const daysGrid = document.getElementById('daysGrid');
-
-      monthLabel.textContent = `${monthNames[state.viewMonth]} ${state.viewYear}`;
-
-      if (direction) {
-        daysGrid.classList.remove('slide-left', 'slide-right');
-        void daysGrid.offsetWidth;
-        daysGrid.classList.add(direction === 1 ? 'slide-left' : 'slide-right');
-      }
-
-      daysGrid.innerHTML = '';
-
-      const firstDay = new Date(state.viewYear, state.viewMonth, 1);
-      const lastDay = new Date(state.viewYear, state.viewMonth + 1, 0);
-      const startingDay = firstDay.getDay();
-      const totalDays = lastDay.getDate();
-
-      for (let i = 0; i < startingDay; i++) {
-        const cell = document.createElement('button');
-        cell.className = 'day-cell empty';
-        daysGrid.appendChild(cell);
-      }
-
-      for (let day = 1; day <= totalDays; day++) {
-        const cell = document.createElement('button');
-        cell.className = 'day-cell';
-        cell.textContent = day;
-
-        const cellDate = new Date(state.viewYear, state.viewMonth, day);
-
-        if (day === today.getDate() &&
-            state.viewMonth === today.getMonth() &&
-            state.viewYear === today.getFullYear()) {
-          cell.classList.add('today');
-        }
-
-        if (state.selectedDate &&
-            day === state.selectedDate.getDate() &&
-            state.viewMonth === state.selectedDate.getMonth() &&
-            state.viewYear === state.selectedDate.getFullYear()) {
-          cell.classList.add('selected');
-        }
-
-        if (cellDate < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
-          cell.classList.add('past');
-        }
-
-        cell.addEventListener('click', () => selectDate(day));
-        daysGrid.appendChild(cell);
-      }
-    }
-
-    function changeMonth(delta) {
-      state.viewMonth += delta;
-      if (state.viewMonth > 11) {
-        state.viewMonth = 0;
-        state.viewYear++;
-      } else if (state.viewMonth < 0) {
-        state.viewMonth = 11;
-        state.viewYear--;
-      }
-      renderCalendar(delta);
-    }
-
-    function selectDate(day) {
-      state.selectedDate = new Date(state.viewYear, state.viewMonth, day);
-      renderCalendar();
-      updateSummary();
-    }
-
-    function openMonthPicker() {
-      state.pickerYear = state.viewYear;
-      document.getElementById('monthPickerOverlay').classList.add('visible');
-      renderMonthPicker();
-    }
-
-    function closeMonthPicker() {
-      document.getElementById('monthPickerOverlay').classList.remove('visible');
-    }
-
-    function renderMonthPicker() {
-      document.getElementById('pickerYear').textContent = state.pickerYear;
-      const grid = document.getElementById('monthsGrid');
-      grid.innerHTML = '';
-
-      monthNamesShort.forEach((name, i) => {
-        const btn = document.createElement('button');
-        btn.className = 'month-option';
-        btn.textContent = name;
-
-        if (i === state.viewMonth && state.pickerYear === state.viewYear) {
-          btn.classList.add('selected');
-        }
-
-        btn.addEventListener('click', () => {
-          state.viewMonth = i;
-          state.viewYear = state.pickerYear;
-          closeMonthPicker();
-          renderCalendar();
-        });
-
-        grid.appendChild(btn);
+    function copySnippet() {
+      const css = '.glass-surface {\n  background: linear-gradient(145deg, var(--surface-strong), var(--surface));\n  border: 1px solid var(--border);\n  box-shadow: 0 14px 35px var(--shadow), inset 0 1px 0 var(--highlight);\n  backdrop-filter: blur(var(--backdrop));\n  border-radius: 28px;\n}\n';
+      navigator.clipboard.writeText(css).then(() => {
+        alert('Glass surface snippet copied! Paste into your stylesheet.');
       });
     }
 
-    function changePickerYear(delta) {
-      state.pickerYear += delta;
-      renderMonthPicker();
-    }
-
-    function renderHours() {
-      const grid = document.getElementById('hourGrid');
-      grid.innerHTML = '';
-
-      for (let h = 1; h <= 12; h++) {
-        const btn = document.createElement('button');
-        btn.className = 'hour-chip';
-        btn.textContent = h;
-        if (state.selectedHour === h) {
-          btn.classList.add('selected');
-        }
-        btn.addEventListener('click', () => {
-          state.selectedHour = h;
-          renderHours();
-          updateSummary();
-        });
-        grid.appendChild(btn);
-      }
-    }
-
-    function renderMinutes() {
-      const row = document.getElementById('minutesRow');
-      const extended = document.getElementById('minutesExtended');
-      row.innerHTML = '';
-      extended.innerHTML = '';
-
-      const mainMinutes = [0, 15, 30, 45];
-      const extraMinutes = [5, 10, 20, 25, 35, 40, 50, 55];
-
-      mainMinutes.forEach(m => {
-        const btn = document.createElement('button');
-        btn.className = 'minute-chip';
-        btn.textContent = m === 0 ? ':00' : `:${m}`;
-        if (state.selectedMinutes === m) {
-          btn.classList.add('selected');
-        }
-        btn.addEventListener('click', () => {
-          state.selectedMinutes = m;
-          renderMinutes();
-          updateSummary();
-        });
-        row.appendChild(btn);
-      });
-
-      const moreBtn = document.createElement('button');
-      moreBtn.className = 'minute-chip more';
-      moreBtn.textContent = state.showExtendedMinutes ? 'Less' : 'More';
-      moreBtn.addEventListener('click', () => {
-        state.showExtendedMinutes = !state.showExtendedMinutes;
-        renderMinutes();
-      });
-      row.appendChild(moreBtn);
-
-      extraMinutes.forEach(m => {
-        const btn = document.createElement('button');
-        btn.className = 'minute-chip';
-        btn.textContent = `:${m.toString().padStart(2, '0')}`;
-        if (state.selectedMinutes === m) {
-          btn.classList.add('selected');
-        }
-        btn.addEventListener('click', () => {
-          state.selectedMinutes = m;
-          renderMinutes();
-          updateSummary();
-        });
-        extended.appendChild(btn);
-      });
-
-      extended.classList.toggle('visible', state.showExtendedMinutes);
-    }
-
-    function renderAmPm() {
-      const control = document.getElementById('ampmControl');
-      control.innerHTML = '';
-
-      ['AM', 'PM'].forEach(period => {
-        const btn = document.createElement('button');
-        btn.className = 'ampm-btn';
-        btn.textContent = period;
-        if (state.selectedAmPm === period) {
-          btn.classList.add('selected');
-        }
-        btn.addEventListener('click', () => {
-          state.selectedAmPm = period;
-          renderAmPm();
-          updateSummary();
-        });
-        control.appendChild(btn);
-      });
-    }
-
-    function updateSummary() {
-      const dateEl = document.getElementById('summaryDate');
-      const timeEl = document.getElementById('summaryTime');
-
-      if (state.selectedDate) {
-        const dayName = dayNamesShort[state.selectedDate.getDay()];
-        const monthName = monthNamesShort[state.selectedDate.getMonth()];
-        const day = state.selectedDate.getDate();
-        dateEl.textContent = `${dayName}, ${monthName} ${day}`;
-      }
-
-      const minStr = state.selectedMinutes.toString().padStart(2, '0');
-      timeEl.textContent = `${state.selectedHour}:${minStr} ${state.selectedAmPm}`;
-    }
-
-    function handleClose() {
-      console.log('Close');
-    }
-
-    function handleCancel() {
-      console.log('Cancel');
-    }
-
-    function handleDone() {
-      let hour24 = state.selectedHour;
-      if (state.selectedAmPm === 'AM') {
-        if (hour24 === 12) hour24 = 0;
-      } else {
-        if (hour24 !== 12) hour24 += 12;
-      }
-
-      const result = {
-        date: state.selectedDate.toISOString().split('T')[0],
-        year: state.selectedDate.getFullYear(),
-        month: state.selectedDate.getMonth() + 1,
-        day: state.selectedDate.getDate(),
-        hour: hour24,
-        hour12: state.selectedHour,
-        minutes: state.selectedMinutes,
-        ampm: state.selectedAmPm,
-        formatted: `${dayNamesShort[state.selectedDate.getDay()]}, ${monthNamesShort[state.selectedDate.getMonth()]} ${state.selectedDate.getDate()} at ${state.selectedHour}:${state.selectedMinutes.toString().padStart(2, '0')} ${state.selectedAmPm}`
-      };
-
-      console.log('Selected:', result);
-
-      const encoded = encodeURIComponent(JSON.stringify(result));
-      const shortcutName = "Handle DateTime";
-
-      // Uncomment for Shortcuts integration:
-      // window.location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(shortcutName)}&input=${encoded}`;
-
-      alert(`Selected: ${result.formatted}`);
-    }
-
-    document.getElementById('monthPickerOverlay').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) {
-        closeMonthPicker();
-      }
+    themeSwitch.addEventListener('change', (e) => setTheme(e.target.checked));
+    themeButton.addEventListener('click', () => setTheme(!root.classList.contains('theme-dark')));
+    toggle.addEventListener('click', () => {
+      const on = toggle.getAttribute('data-on') === 'true';
+      toggle.setAttribute('data-on', !on);
     });
-
-    init();
   </script>
 </body>
 </html>
