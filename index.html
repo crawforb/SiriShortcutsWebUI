@@ -13,14 +13,19 @@
   <div class="page-frame">
     <header class="hero">
       <div class="hero-copy">
-        <h1>Glassmorphic UI Elements</h1>
+        <h1>Minimal Glass UI System</h1>
         <p>
-          A reusable collection of glass surfaces, shapes, controls, and icon shells crafted for modern web apps.
-          Drop these into any page, swap the theme toggle, and pair with your own icons for an instantly premium look.
+          A distilled set of frosted surfaces, control shells, and gradients that echo the polish used by leading
+          product teams. Ship faster with presets that respect accessibility, rhythm, and motion.
         </p>
+        <ul class="hero-highlights">
+          <li>Consistent layer stack: blur, tint, dual borders, and lift.</li>
+          <li>Adaptive light / dark palettes tuned for 4.5:1 text contrast.</li>
+          <li>Tokenized radii, shadows, and spacing for quick remixing.</li>
+        </ul>
         <div class="actions">
           <button class="button" id="themeButton">Toggle light / dark</button>
-          <button class="button secondary" onclick="copySnippet()">Copy CSS snippet</button>
+          <button class="button secondary" onclick="copySnippet()">Copy CSS recipe</button>
         </div>
       </div>
       <div class="showcase-card">
@@ -34,15 +39,19 @@
         <div class="meta-bar">
           <div class="meta-tile">
             <div class="meta-title">Blur</div>
-            <div class="meta-value">22px backdrop</div>
+            <div class="meta-value">22px overlay, 40px hero</div>
           </div>
           <div class="meta-tile">
             <div class="meta-title">Borders</div>
-            <div class="meta-value">Subtle double line</div>
+            <div class="meta-value">Inside glow, outside hairline</div>
           </div>
           <div class="meta-tile">
             <div class="meta-title">Lighting</div>
-            <div class="meta-value">Top-left highlight</div>
+            <div class="meta-value">Top-left highlight, soft drop</div>
+          </div>
+          <div class="meta-tile">
+            <div class="meta-title">Spacing</div>
+            <div class="meta-value">8 / 12 / 16 rhythm</div>
           </div>
         </div>
         <div class="badges">
@@ -103,10 +112,10 @@
     <section class="showcase-card">
       <div class="section-title">
         <span>Dark Surfaces</span>
-        <small>Contrast ready overlays</small>
+        <small>Contrast-safe overlays</small>
       </div>
       <div class="helper-bar">
-        <p>Use <code>.theme-dark</code> on <code>&lt;html&gt;</code> to flip the palette.</p>
+        <p>Use <code>.theme-dark</code> on <code>&lt;html&gt;</code> to flip the palette. Keep blur and border tokens identical between modes.</p>
       </div>
       <div class="glass-grid">
         <div>
@@ -223,7 +232,7 @@
     }
 
     function copySnippet() {
-      const css = '.glass-surface {\n  background: linear-gradient(145deg, var(--surface-strong), var(--surface));\n  border: 1px solid var(--border);\n  box-shadow: 0 14px 35px var(--shadow), inset 0 1px 0 var(--highlight);\n  backdrop-filter: blur(var(--backdrop));\n  border-radius: 28px;\n}\n';
+      const css = `:root {\n  --surface: rgba(255, 255, 255, 0.64);\n  --surface-strong: rgba(255, 255, 255, 0.86);\n  --border: rgba(255, 255, 255, 0.78);\n  --shadow: rgba(15, 23, 42, 0.14);\n  --highlight: rgba(255, 255, 255, 0.85);\n  --backdrop: 22px;\n}\n\n.glass-surface {\n  background: linear-gradient(145deg, var(--surface-strong), var(--surface));\n  border: 1px solid var(--border);\n  box-shadow: 0 12px 32px var(--shadow), inset 0 1px 0 var(--highlight);\n  backdrop-filter: blur(var(--backdrop));\n  border-radius: 24px;\n}\n`;
       navigator.clipboard.writeText(css).then(() => {
         alert('Glass surface snippet copied! Paste into your stylesheet.');
       });
