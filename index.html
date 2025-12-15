@@ -3,214 +3,297 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Glassmorphic UI Kit</title>
+  <title>Minimal Glass UI System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/glass.css">
 </head>
 <body>
-  <div class="page-frame">
-    <header class="hero">
-      <div class="hero-copy">
-        <h1>Minimal Glass UI System</h1>
-        <p>
-          A distilled set of frosted surfaces, control shells, and gradients that echo the polish used by leading
-          product teams. Ship faster with presets that respect accessibility, rhythm, and motion.
-        </p>
-        <ul class="hero-highlights">
-          <li>Consistent layer stack: blur, tint, dual borders, and lift.</li>
-          <li>Adaptive light / dark palettes tuned for 4.5:1 text contrast.</li>
-          <li>Tokenized radii, shadows, and spacing for quick remixing.</li>
-        </ul>
-        <div class="actions">
-          <button class="button" id="themeButton">Toggle light / dark</button>
-          <button class="button secondary" onclick="copySnippet()">Copy CSS recipe</button>
+  <div class="ambient-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="page-container">
+    <!-- Hero Header -->
+    <header class="hero-section">
+      <div class="hero-content">
+        <div class="glass-panel hero-panel">
+          <h1 class="hero-title">Minimal Glass<br>UI System</h1>
+          <p class="hero-description">A distilled set of frosted surfaces, control shells, and gradients that echo the polish used by leading product teams. Ship faster with presets that respect accessibility, rhythm, and motion.</p>
+
+          <ul class="feature-list">
+            <li>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+                <path d="M6 10l2.5 2.5L14 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span>Consistent layer stack: blur, tint, dual borders, and lift.</span>
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+                <path d="M6 10l2.5 2.5L14 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span>Adaptive light / dark palettes tuned for 4.5:1 text contrast.</span>
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+                <path d="M6 10l2.5 2.5L14 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span>Tokenized radii, shadows, and spacing for quick remixing.</span>
+            </li>
+          </ul>
+
+          <div class="cta-buttons">
+            <button class="glass-button primary" id="themeButton">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Toggle Theme
+            </button>
+            <button class="glass-button secondary" onclick="copySnippet()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Copy CSS
+            </button>
+          </div>
         </div>
       </div>
-      <div class="showcase-card">
-        <div class="section-title">
-          <span>Design Tokens</span>
-          <label class="theme-toggle">
-            <input type="checkbox" id="themeSwitch">
-            <span>Dark mode</span>
-          </label>
-        </div>
-        <div class="meta-bar">
-          <div class="meta-tile">
-            <div class="meta-title">Blur</div>
-            <div class="meta-value">22px overlay, 40px hero</div>
+
+      <div class="hero-sidebar">
+        <div class="glass-panel tokens-panel">
+          <div class="panel-header">
+            <h3>Design Tokens</h3>
+            <label class="theme-switch">
+              <input type="checkbox" id="themeSwitch">
+              <span class="switch-slider"></span>
+              <span class="switch-label">Dark mode</span>
+            </label>
           </div>
-          <div class="meta-tile">
-            <div class="meta-title">Borders</div>
-            <div class="meta-value">Inside glow, outside hairline</div>
+
+          <div class="token-grid">
+            <div class="token-card">
+              <div class="token-label">Blur</div>
+              <div class="token-value">22px overlay<br>40px hero</div>
+            </div>
+            <div class="token-card">
+              <div class="token-label">Borders</div>
+              <div class="token-value">Inside glow<br>outside hairline</div>
+            </div>
+            <div class="token-card">
+              <div class="token-label">Lighting</div>
+              <div class="token-value">Top-left highlight<br>soft drop</div>
+            </div>
+            <div class="token-card">
+              <div class="token-label">Spacing</div>
+              <div class="token-value">8 / 12 / 16<br>rhythm</div>
+            </div>
           </div>
-          <div class="meta-tile">
-            <div class="meta-title">Lighting</div>
-            <div class="meta-value">Top-left highlight, soft drop</div>
+
+          <div class="tag-group">
+            <span class="tag">Pills</span>
+            <span class="tag">Icons</span>
+            <span class="tag">Controls</span>
+            <span class="tag">Light + Dark</span>
+            <span class="tag">Gradients</span>
           </div>
-          <div class="meta-tile">
-            <div class="meta-title">Spacing</div>
-            <div class="meta-value">8 / 12 / 16 rhythm</div>
-          </div>
-        </div>
-        <div class="badges">
-          <span class="badge">Pills</span>
-          <span class="badge">Icons</span>
-          <span class="badge">Controls</span>
-          <span class="badge">Light + Dark</span>
-          <span class="badge">Gradients</span>
         </div>
       </div>
     </header>
 
-    <section class="showcase-card">
-      <div class="section-title">
-        <span>Core Shapes</span>
-        <small>Light surfaces, frosted borders, subtle shadow</small>
+    <!-- Core Shapes Section -->
+    <section class="glass-panel shapes-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Core Shapes</h2>
+          <p class="subtitle">Light surfaces, frosted borders, subtle shadow</p>
+        </div>
       </div>
-      <div class="glass-grid">
-        <div>
-          <div class="glass-surface shape-pill"></div>
-          <div class="shape-label">Pill</div>
+
+      <div class="shapes-grid">
+        <div class="shape-item">
+          <div class="glass-shape pill"></div>
+          <span class="shape-name">Pill</span>
         </div>
-        <div>
-          <div class="glass-surface shape-oval"></div>
-          <div class="shape-label">Oval</div>
+        <div class="shape-item">
+          <div class="glass-shape oval"></div>
+          <span class="shape-name">Oval</span>
         </div>
-        <div>
-          <div class="glass-surface shape-circle"></div>
-          <div class="shape-label">Circle</div>
+        <div class="shape-item">
+          <div class="glass-shape circle"></div>
+          <span class="shape-name">Circle</span>
         </div>
-        <div>
-          <div class="glass-surface shape-square"></div>
-          <div class="shape-label">Soft square</div>
+        <div class="shape-item">
+          <div class="glass-shape soft-square"></div>
+          <span class="shape-name">Soft Square</span>
         </div>
-        <div>
-          <div class="glass-surface shape-rounded"></div>
-          <div class="shape-label">Rounded square</div>
+        <div class="shape-item">
+          <div class="glass-shape rounded-square"></div>
+          <span class="shape-name">Rounded</span>
         </div>
-        <div>
-          <div class="glass-surface shape-rectangle"></div>
-          <div class="shape-label">Rectangle</div>
+        <div class="shape-item">
+          <div class="glass-shape rectangle"></div>
+          <span class="shape-name">Rectangle</span>
         </div>
-        <div>
-          <div class="glass-surface shape-diamond"></div>
-          <div class="shape-label">Diamond</div>
+        <div class="shape-item">
+          <div class="glass-shape diamond"></div>
+          <span class="shape-name">Diamond</span>
         </div>
-        <div>
-          <div class="glass-surface shape-teardrop"></div>
-          <div class="shape-label">Teardrop</div>
+        <div class="shape-item">
+          <div class="glass-shape teardrop"></div>
+          <span class="shape-name">Teardrop</span>
         </div>
-        <div>
-          <div class="glass-surface shape-triangle"></div>
-          <div class="shape-label">Triangle</div>
+        <div class="shape-item">
+          <div class="glass-shape triangle"></div>
+          <span class="shape-name">Triangle</span>
         </div>
       </div>
     </section>
 
-    <section class="showcase-card">
-      <div class="section-title">
-        <span>Dark Surfaces</span>
-        <small>Contrast-safe overlays</small>
-      </div>
-      <div class="helper-bar">
-        <p>Use <code>.theme-dark</code> on <code>&lt;html&gt;</code> to flip the palette. Keep blur and border tokens identical between modes.</p>
-      </div>
-      <div class="glass-grid">
-        <div>
-          <div class="glass-surface shape-pill"></div>
-          <div class="shape-label">Pill</div>
-        </div>
-        <div>
-          <div class="glass-surface shape-circle"></div>
-          <div class="shape-label">Circle</div>
-        </div>
-        <div>
-          <div class="glass-surface shape-square"></div>
-          <div class="shape-label">Square</div>
-        </div>
-        <div>
-          <div class="glass-surface shape-rectangle"></div>
-          <div class="shape-label">Rectangle</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="showcase-card">
-      <div class="section-title">
-        <span>Icon Capsules</span>
-        <small>Drop any SVG or emoji inside</small>
-      </div>
-      <div class="glass-grid">
-        <div class="icon-chip"><div class="swatch" style="--fill: linear-gradient(180deg, #f59e0b, #f97316);"></div></div>
-        <div class="icon-chip"><div class="swatch" style="--fill: linear-gradient(180deg, #22c55e, #16a34a);"></div></div>
-        <div class="icon-chip"><div class="swatch" style="--fill: linear-gradient(180deg, #3b82f6, #2563eb);"></div></div>
-        <div class="icon-chip"><div class="swatch" style="--fill: linear-gradient(180deg, #a855f7, #7e22ce);"></div></div>
-        <div class="icon-chip"><div class="swatch" style="--fill: linear-gradient(180deg, #f43f5e, #e11d48);"></div></div>
-      </div>
-      <div class="helper-bar">
-        <span>Tip: pair with brand icons to recreate the glossy badges from the reference set.</span>
-      </div>
-    </section>
-
-    <section class="showcase-card">
-      <div class="section-title">
-        <span>Controls</span>
-        <small>Buttons, toggle, slider, and inputs in glass</small>
-      </div>
-      <div class="glass-grid">
-        <div class="glass-control">
-          <button class="button">Primary glass button</button>
-          <button class="button secondary">Secondary ghost</button>
-        </div>
-        <div class="glass-control">
-          <label class="section-title" style="margin:0;">
-            <span>Toggle</span>
-          </label>
-          <div class="glass-toggle" data-on="true" id="demoToggle">
-            <div class="thumb"></div>
+    <!-- Two Column Layout -->
+    <div class="two-column-grid">
+      <!-- Icon Capsules -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Icon Capsules</h2>
+            <p class="subtitle">Drop any SVG or emoji inside</p>
           </div>
         </div>
-        <div class="glass-control">
-          <label class="section-title" style="margin:0;">
-            <span>Slider</span>
-          </label>
+
+        <div class="icon-grid">
+          <div class="icon-capsule">
+            <div class="icon-inner sunrise"></div>
+          </div>
+          <div class="icon-capsule">
+            <div class="icon-inner aurora"></div>
+          </div>
+          <div class="icon-capsule">
+            <div class="icon-inner sky"></div>
+          </div>
+          <div class="icon-capsule">
+            <div class="icon-inner violet"></div>
+          </div>
+          <div class="icon-capsule">
+            <div class="icon-inner magenta"></div>
+          </div>
+        </div>
+
+        <div class="hint-text">
+          Tip: pair with brand icons to recreate the glossy badges from the reference set.
+        </div>
+      </section>
+
+      <!-- Palette & Tokens -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Palette & Tokens</h2>
+            <p class="subtitle">Use these ramps to tint fills</p>
+          </div>
+        </div>
+
+        <div class="palette-grid">
+          <div class="palette-card">
+            <div class="palette-label">SKY</div>
+            <div class="palette-swatch sky-gradient"></div>
+          </div>
+          <div class="palette-card">
+            <div class="palette-label">SUNRISE</div>
+            <div class="palette-swatch sunrise-gradient"></div>
+          </div>
+          <div class="palette-card">
+            <div class="palette-label">AURORA</div>
+            <div class="palette-swatch aurora-gradient"></div>
+          </div>
+          <div class="palette-card">
+            <div class="palette-label">MAGENTA</div>
+            <div class="palette-swatch magenta-gradient"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Controls Section -->
+    <section class="glass-panel controls-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Controls</h2>
+          <p class="subtitle">Buttons, toggles, sliders, and inputs in glass</p>
+        </div>
+      </div>
+
+      <div class="controls-grid">
+        <div class="control-group">
+          <label class="control-label">Buttons</label>
+          <div class="button-row">
+            <button class="glass-button primary">Primary glass</button>
+            <button class="glass-button secondary">Secondary ghost</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Toggle</label>
+          <div class="glass-toggle" id="demoToggle">
+            <div class="toggle-track">
+              <div class="toggle-thumb"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Slider</label>
           <div class="glass-slider">
-            <div class="fill"></div>
-            <div class="handle"></div>
+            <div class="slider-track">
+              <div class="slider-fill"></div>
+              <div class="slider-thumb"></div>
+            </div>
           </div>
         </div>
-        <div class="glass-control">
-          <label class="section-title" style="margin:0;">
-            <span>Input</span>
-          </label>
-          <input class="glass-input" placeholder="Type within a frosted shell" />
+
+        <div class="control-group">
+          <label class="control-label">Input</label>
+          <input type="text" class="glass-input" placeholder="Type within a frosted shell">
         </div>
       </div>
     </section>
 
-    <section class="showcase-card">
-      <div class="section-title">
-        <span>Palette & Tokens</span>
-        <small>Use these ramps to tint fills</small>
+    <!-- Dark Mode Preview -->
+    <section class="glass-panel dark-preview-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Dark Surfaces</h2>
+          <p class="subtitle">Contrast-safe overlays</p>
+        </div>
       </div>
-      <div class="palette">
-        <div class="swatch-card">
-          <div class="meta-title">Sky</div>
-          <div class="swatch" style="background: linear-gradient(120deg, #60a5fa, #2563eb);"></div>
+
+      <div class="hint-box">
+        <code>.theme-dark</code> on <code>&lt;html&gt;</code> to flip the palette. Keep blur and border tokens identical between modes.
+      </div>
+
+      <div class="shapes-grid compact">
+        <div class="shape-item">
+          <div class="glass-shape pill"></div>
+          <span class="shape-name">Pill</span>
         </div>
-        <div class="swatch-card">
-          <div class="meta-title">Sunrise</div>
-          <div class="swatch" style="background: linear-gradient(120deg, #f59e0b, #f97316);"></div>
+        <div class="shape-item">
+          <div class="glass-shape circle"></div>
+          <span class="shape-name">Circle</span>
         </div>
-        <div class="swatch-card">
-          <div class="meta-title">Aurora</div>
-          <div class="swatch" style="background: linear-gradient(120deg, #22c55e, #14b8a6);"></div>
+        <div class="shape-item">
+          <div class="glass-shape soft-square"></div>
+          <span class="shape-name">Square</span>
         </div>
-        <div class="swatch-card">
-          <div class="meta-title">Magenta</div>
-          <div class="swatch" style="background: linear-gradient(120deg, #f43f5e, #db2777);"></div>
+        <div class="shape-item">
+          <div class="glass-shape rectangle"></div>
+          <span class="shape-name">Rectangle</span>
         </div>
       </div>
     </section>
@@ -220,30 +303,64 @@
     const root = document.documentElement;
     const themeSwitch = document.getElementById('themeSwitch');
     const themeButton = document.getElementById('themeButton');
-    const toggle = document.getElementById('demoToggle');
+    const demoToggle = document.getElementById('demoToggle');
 
-    function setTheme(dark) {
-      if (dark) {
+    // Theme switching
+    function setTheme(isDark) {
+      if (isDark) {
         root.classList.add('theme-dark');
+        root.classList.remove('theme-light');
       } else {
         root.classList.remove('theme-dark');
+        root.classList.add('theme-light');
       }
-      themeSwitch.checked = dark;
-    }
-
-    function copySnippet() {
-      const css = `:root {\n  --surface: rgba(255, 255, 255, 0.64);\n  --surface-strong: rgba(255, 255, 255, 0.86);\n  --border: rgba(255, 255, 255, 0.78);\n  --shadow: rgba(15, 23, 42, 0.14);\n  --highlight: rgba(255, 255, 255, 0.85);\n  --backdrop: 22px;\n}\n\n.glass-surface {\n  background: linear-gradient(145deg, var(--surface-strong), var(--surface));\n  border: 1px solid var(--border);\n  box-shadow: 0 12px 32px var(--shadow), inset 0 1px 0 var(--highlight);\n  backdrop-filter: blur(var(--backdrop));\n  border-radius: 24px;\n}\n`;
-      navigator.clipboard.writeText(css).then(() => {
-        alert('Glass surface snippet copied! Paste into your stylesheet.');
-      });
+      themeSwitch.checked = isDark;
     }
 
     themeSwitch.addEventListener('change', (e) => setTheme(e.target.checked));
-    themeButton.addEventListener('click', () => setTheme(!root.classList.contains('theme-dark')));
-    toggle.addEventListener('click', () => {
-      const on = toggle.getAttribute('data-on') === 'true';
-      toggle.setAttribute('data-on', !on);
+    themeButton.addEventListener('click', () => {
+      const isDark = root.classList.contains('theme-dark');
+      setTheme(!isDark);
     });
+
+    // Demo toggle
+    let toggleState = false;
+    demoToggle.addEventListener('click', () => {
+      toggleState = !toggleState;
+      demoToggle.classList.toggle('active', toggleState);
+    });
+
+    // Copy CSS snippet
+    function copySnippet() {
+      const css = `/* Minimal Glass UI System */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.8);
+  --glass-border-inner: rgba(255, 255, 255, 0.4);
+  --glass-shadow: rgba(31, 38, 58, 0.15);
+  --glass-highlight: rgba(255, 255, 255, 0.9);
+  --glass-blur: 24px;
+}
+
+.glass-panel {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.55) 100%
+  );
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 8px 32px var(--glass-shadow),
+    inset 0 1px 0 var(--glass-highlight),
+    inset 0 0 0 1px var(--glass-border-inner);
+  border-radius: 24px;
+}`;
+
+      navigator.clipboard.writeText(css).then(() => {
+        alert('Glass CSS copied to clipboard!');
+      });
+    }
   </script>
 </body>
 </html>
