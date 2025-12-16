@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DateTime Picker</title>
+  <link rel="stylesheet" href="../../shared/ui.css">
+</head>
+<body>
+  <div class="shell">
+    <div class="sheet">
+      <div class="header">
+        <p class="title">Pick date and time</p>
+        <p class="sub" id="subline">Returns JSON to Shortcuts</p>
+      </div>
+
+      <div class="content">
+        <div class="card" style="margin-bottom:12px;">
+          <div class="label">Preview</div>
+          <div class="preview" id="preview">…</div>
+          <div class="small" id="meta">…</div>
+        </div>
+
+        <div class="card" style="margin-bottom:12px;">
+          <div class="label">Value</div>
+          <input id="dt" type="datetime-local" />
+        </div>
+
+        <div class="row" style="margin: 0 0 12px;">
+          <div class="card" style="flex:1; min-width:200px;">
+            <div class="label">Rounding</div>
+            <select id="rounding">
+              <option value="0">None</option>
+              <option value="5">5 min</option>
+              <option value="10">10 min</option>
+              <option value="15" selected>15 min</option>
+              <option value="30">30 min</option>
+            </select>
+          </div>
+
+          <div class="card" style="flex:1; min-width:200px;">
+            <div class="label">Quick set</div>
+            <div class="row">
+              <div class="chip" id="qToday">Today</div>
+              <div class="chip" id="qTomorrow">Tomorrow</div>
+              <div class="chip" id="qNextWeek">Next week</div>
+              <div class="chip" id="qNow">Now</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="label">Notes</div>
+          <div class="small">
+            If the web view does not auto-close, tap Done again or close the card manually.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bar">
+    <div class="barInner">
+      <button class="btn" id="cancel">Cancel</button>
+      <div style="flex:1;"></div>
+      <button class="btn btnPrimary" id="done">Done</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { q, returnToShortcuts } from "../../shared/bridge.js";
+
+    const rid = q("rid", crypto.randomUUID());
+    const cb = q("cb", "UI DateTime Picker");
+    const initialIso = q("initial", null);
+
+    const elDt = document.getElementById("dt");
+    const elRounding = document.getElementById("rounding");
+    const elPreview = document.getElementById("preview");
+    const elMeta = document.getElementById("meta");
+    const subline = document.getElementById("subline");
+
+    subline.textContent = `Callback: ${cb}   •   rid: ${rid}`;
+
+    function pad2(n){ return String(n).padStart(2,"0"); }
+
+    function toDatetimeLocalValue(d){
+      return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+    }
+
+    function fromDatetimeLocalValue(v){
+      const d = new Date(v);
+      return isNaN(d.getTime()) ? null : d;
+    }
+
+    function roundMinutes(date, step){
+      if (!step || step <= 0) return date;
+      const ms = date.getTime();
+      const stepMs = step * 60 * 1000;
+      const rounded = Math.round(ms / stepMs) * stepMs;
+      return new Date(rounded);
+    }
+
+    function isoWithOffset(d){
+      const offMin = -d.getTimezoneOffset();
+      const sign = offMin >= 0 ? "+" : "-";
+      const abs = Math.abs(offMin);
+      const hh = pad2(Math.floor(abs / 60));
+      const mm = pad2(abs % 60);
+      return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}${sign}${hh}:${mm}`;
+    }
+
+    function displayString(d){
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "local";
+      const dtf = new Intl.DateTimeFormat(undefined, {
+        weekday:"short", year:"numeric", month:"short", day:"2-digit",
+        hour:"numeric", minute:"2-digit"
+      });
+      return { text: dtf.format(d), tz };
+    }
+
+    function updatePreview(){
+      const d0 = fromDatetimeLocalValue(elDt.value);
+      if (!d0) {
+        elPreview.textContent = "Pick a date and time";
+        elMeta.textContent = "";
+        return;
+      }
+      const step = parseInt(elRounding.value, 10) || 0;
+      const d = roundMinutes(d0, step);
+
+      elDt.value = toDatetimeLocalValue(d);
+
+      const { text, tz } = displayString(d);
+      elPreview.textContent = text;
+      elMeta.textContent = `Timezone: ${tz}   •   EpochMs: ${d.getTime()}   •   ISO: ${isoWithOffset(d)}`;
+    }
+
+    function setQuick(mode){
+      const now = new Date();
+      let d = new Date(now);
+      if (mode === "today") {
+        d.setHours(now.getHours(), now.getMinutes(), 0, 0);
+      } else if (mode === "tomorrow") {
+        d.setDate(d.getDate() + 1);
+        d.setHours(now.getHours(), now.getMinutes(), 0, 0);
+      } else if (mode === "nextweek") {
+        d.setDate(d.getDate() + 7);
+        d.setHours(now.getHours(), now.getMinutes(), 0, 0);
+      } else if (mode === "now") {
+        d.setSeconds(0,0);
+      }
+      elDt.value = toDatetimeLocalValue(d);
+      updatePreview();
+    }
+
+    (function init(){
+      let d = new Date();
+      d.setSeconds(0,0);
+
+      if (initialIso) {
+        const decoded = decodeURIComponent(initialIso);
+        const parsed = new Date(decoded);
+        if (!isNaN(parsed.getTime())) d = parsed;
+      }
+
+      elDt.value = toDatetimeLocalValue(d);
+      updatePreview();
+    })();
+
+    elDt.addEventListener("change", updatePreview);
+    elRounding.addEventListener("change", updatePreview);
+
+    document.getElementById("qToday").onclick = () => setQuick("today");
+    document.getElementById("qTomorrow").onclick = () => setQuick("tomorrow");
+    document.getElementById("qNextWeek").onclick = () => setQuick("nextweek");
+    document.getElementById("qNow").onclick = () => setQuick("now");
+
+    document.getElementById("cancel").onclick = () => {
+      returnToShortcuts(cb, { v:1, rid, status:"cancel", type:"datetime", data:null });
+    };
+
+    document.getElementById("done").onclick = () => {
+      const d0 = fromDatetimeLocalValue(elDt.value);
+      if (!d0) return;
+      const step = parseInt(elRounding.value, 10) || 0;
+      const d = roundMinutes(d0, step);
+      const { text, tz } = displayString(d);
+
+      const payload = {
+        v: 1,
+        rid,
+        status: "ok",
+        type: "datetime",
+        data: {
+          iso: isoWithOffset(d),
+          epochMs: d.getTime(),
+          tz,
+          display: text,
+          roundingMin: step
+        }
+      };
+
+      returnToShortcuts(cb, payload);
+    };
+  </script>
+</body>
+</html>
