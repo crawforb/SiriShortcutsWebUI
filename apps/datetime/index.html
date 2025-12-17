@@ -5,65 +5,370 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DateTime Picker</title>
   <link rel="stylesheet" href="../../shared/ui.css">
+  <style>
+    /* Step indicator */
+    .steps {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      padding: 12px 0;
+    }
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.25);
+      transition: all 0.3s ease;
+    }
+    .step-dot.active {
+      width: 24px;
+      border-radius: 4px;
+      background: rgba(255,255,255,.85);
+    }
+
+    /* Selected datetime display */
+    .selected-datetime {
+      text-align: center;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Calendar styles */
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 12px;
+    }
+    .calendar-nav {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex: 1;
+      justify-content: center;
+    }
+    .month-year-btn {
+      padding: 8px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.20);
+      background: rgba(255,255,255,.10);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      min-width: 100px;
+      text-align: center;
+    }
+    .month-year-btn:hover {
+      background: rgba(255,255,255,.15);
+    }
+    .nav-arrow {
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.20);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+    .calendar-day-header {
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      padding: 8px 0;
+      font-weight: 600;
+    }
+    .calendar-day {
+      aspect-ratio: 1;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .calendar-day:hover {
+      background: rgba(255,255,255,.12);
+    }
+    .calendar-day.selected {
+      background: rgba(74, 144, 226, 0.85);
+      border-color: rgba(74, 144, 226, 1);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+    }
+    .calendar-day.other-month {
+      opacity: 0.3;
+    }
+    .calendar-day.today {
+      border-color: rgba(74, 144, 226, 0.6);
+    }
+
+    /* Time picker - circular layout */
+    .time-picker {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .time-display {
+      text-align: center;
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: var(--text);
+    }
+    .time-circle {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      margin: 0 auto;
+    }
+    .hour-btn, .minute-btn, .period-btn {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .hour-btn {
+      width: 56px;
+      height: 56px;
+      font-size: 18px;
+    }
+    .minute-btn {
+      width: 68px;
+      height: 68px;
+      font-size: 15px;
+      border-radius: 16px; /* Diamond shape - more rounded square */
+      transform: rotate(45deg);
+    }
+    .minute-btn span {
+      transform: rotate(-45deg);
+    }
+    .period-btn {
+      width: 62px;
+      height: 62px;
+      font-size: 16px;
+      border-radius: 14px;
+    }
+    .hour-btn:hover, .minute-btn:hover, .period-btn:hover {
+      background: rgba(255,255,255,.15);
+    }
+    .hour-btn.selected, .minute-btn.selected, .period-btn.selected {
+      background: rgba(74, 144, 226, 0.85);
+      border-color: rgba(74, 144, 226, 1);
+      box-shadow: 0 4px 16px rgba(74, 144, 226, 0.4);
+    }
+
+    /* Duration picker */
+    .duration-input-group {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      margin: 24px 0;
+    }
+    .duration-input {
+      width: 100px;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.20);
+      background: rgba(255,255,255,.10);
+      color: var(--text);
+      font-size: 32px;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+    }
+    .duration-unit {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .duration-tokens {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .duration-token {
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .duration-token:hover {
+      background: rgba(255,255,255,.15);
+    }
+
+    /* View containers */
+    .view {
+      display: none;
+    }
+    .view.active {
+      display: block;
+    }
+
+    /* Month/Year picker overlay */
+    .picker-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(8px);
+    }
+    .picker-overlay.active {
+      display: flex;
+    }
+    .picker-panel {
+      background: var(--glass);
+      border: 1px solid var(--stroke);
+      border-radius: 22px;
+      padding: 20px;
+      max-width: 320px;
+      width: 90%;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+    .picker-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .picker-item {
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+    .picker-item:hover {
+      background: rgba(255,255,255,.15);
+    }
+    .picker-item.selected {
+      background: rgba(74, 144, 226, 0.85);
+      border-color: rgba(74, 144, 226, 1);
+    }
+  </style>
 </head>
 <body>
   <div class="shell">
     <div class="sheet">
       <div class="header">
-        <p class="title">Pick date and time</p>
-        <p class="sub" id="subline">Returns JSON to Shortcuts</p>
+        <div class="steps">
+          <div class="step-dot active" id="step-dot-0"></div>
+          <div class="step-dot" id="step-dot-1"></div>
+          <div class="step-dot" id="step-dot-2"></div>
+        </div>
+        <div class="selected-datetime" id="selectedDisplay">Select a date</div>
       </div>
 
       <div class="content">
-        <div class="card" style="margin-bottom:12px;">
-          <div class="label">Preview</div>
-          <div class="preview" id="preview">…</div>
-          <div class="small" id="meta">…</div>
-        </div>
-
-        <div class="card" style="margin-bottom:12px;">
-          <div class="label">Value</div>
-          <input id="dt" type="datetime-local" />
-        </div>
-
-        <div class="row" style="margin: 0 0 12px;">
-          <div class="card" style="flex:1; min-width:200px;">
-            <div class="label">Rounding</div>
-            <select id="rounding">
-              <option value="0">None</option>
-              <option value="5">5 min</option>
-              <option value="10">10 min</option>
-              <option value="15" selected>15 min</option>
-              <option value="30">30 min</option>
-            </select>
+        <!-- Step 1: Date Selection -->
+        <div class="view active" id="view-date">
+          <div class="card">
+            <div class="calendar-header">
+              <button class="nav-arrow" id="prevMonth">‹</button>
+              <div class="calendar-nav">
+                <button class="month-year-btn" id="monthBtn">Month</button>
+                <button class="month-year-btn" id="yearBtn">Year</button>
+              </div>
+              <button class="nav-arrow" id="nextMonth">›</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
           </div>
+        </div>
 
-          <div class="card" style="flex:1; min-width:200px;">
-            <div class="label">Quick set</div>
-            <div class="row">
-              <div class="chip" id="qToday">Today</div>
-              <div class="chip" id="qTomorrow">Tomorrow</div>
-              <div class="chip" id="qNextWeek">Next week</div>
-              <div class="chip" id="qNow">Now</div>
+        <!-- Step 2: Time Selection -->
+        <div class="view" id="view-time">
+          <div class="card">
+            <div class="time-picker">
+              <div class="time-display" id="timeDisplay">12:00 AM</div>
+              <div class="time-circle" id="timeCircle"></div>
             </div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="label">Notes</div>
-          <div class="small">
-            If the web view does not auto-close, tap Done again or close the card manually.
+        <!-- Step 3: Duration Selection -->
+        <div class="view" id="view-duration">
+          <div class="card">
+            <div class="label" style="text-align: center; font-size: 14px;">How long?</div>
+            <div class="duration-input-group">
+              <input type="number" class="duration-input" id="durationInput" value="30" min="1" max="1440" />
+              <span class="duration-unit">minutes</span>
+            </div>
+            <div class="duration-tokens">
+              <div class="duration-token" data-duration="15">15 min</div>
+              <div class="duration-token" data-duration="30">30 min</div>
+              <div class="duration-token" data-duration="60">1 hour</div>
+              <div class="duration-token" data-duration="90">1.5 hours</div>
+              <div class="duration-token" data-duration="120">2 hours</div>
+              <div class="duration-token" data-duration="180">3 hours</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Month/Year picker overlay -->
+  <div class="picker-overlay" id="monthPicker">
+    <div class="picker-panel">
+      <div class="label">Select Month</div>
+      <div class="picker-grid" id="monthGrid"></div>
+    </div>
+  </div>
+
+  <div class="picker-overlay" id="yearPicker">
+    <div class="picker-panel">
+      <div class="label">Select Year</div>
+      <div class="picker-grid" id="yearGrid"></div>
+    </div>
+  </div>
+
   <div class="bar">
     <div class="barInner">
-      <button class="btn" id="cancel">Cancel</button>
+      <button class="btn" id="backBtn">Back</button>
       <div style="flex:1;"></div>
-      <button class="btn btnPrimary" id="done">Done</button>
+      <button class="btn btnPrimary" id="nextBtn">Next</button>
     </div>
   </div>
 
@@ -74,135 +379,436 @@
     const cb = q("cb", "UI DateTime Picker");
     const initialIso = q("initial", null);
 
-    const elDt = document.getElementById("dt");
-    const elRounding = document.getElementById("rounding");
-    const elPreview = document.getElementById("preview");
-    const elMeta = document.getElementById("meta");
-    const subline = document.getElementById("subline");
+    // State
+    let currentStep = 0;
+    let selectedDate = new Date();
+    let selectedHour = 12;
+    let selectedMinute = 0;
+    let selectedPeriod = 'AM';
+    let selectedDuration = 30;
+    let calendarMonth = new Date().getMonth();
+    let calendarYear = new Date().getFullYear();
 
-    subline.textContent = `Callback: ${cb}   •   rid: ${rid}`;
-
-    function pad2(n){ return String(n).padStart(2,"0"); }
-
-    function toDatetimeLocalValue(d){
-      return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+    // Initialize from query param if provided
+    if (initialIso) {
+      const decoded = decodeURIComponent(initialIso);
+      const parsed = new Date(decoded);
+      if (!isNaN(parsed.getTime())) {
+        selectedDate = parsed;
+        const hours = parsed.getHours();
+        selectedHour = hours % 12 || 12;
+        selectedPeriod = hours >= 12 ? 'PM' : 'AM';
+        selectedMinute = Math.floor(parsed.getMinutes() / 15) * 15;
+      }
     }
 
-    function fromDatetimeLocalValue(v){
-      const d = new Date(v);
-      return isNaN(d.getTime()) ? null : d;
+    // Elements
+    const views = [
+      document.getElementById('view-date'),
+      document.getElementById('view-time'),
+      document.getElementById('view-duration')
+    ];
+    const stepDots = [
+      document.getElementById('step-dot-0'),
+      document.getElementById('step-dot-1'),
+      document.getElementById('step-dot-2')
+    ];
+    const selectedDisplay = document.getElementById('selectedDisplay');
+    const backBtn = document.getElementById('backBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    // Format display
+    function formatDateTime() {
+      const date = new Date(selectedDate);
+      const hour24 = selectedPeriod === 'PM' ? (selectedHour % 12) + 12 : (selectedHour % 12);
+      date.setHours(hour24, selectedMinute, 0, 0);
+
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      const dayName = days[date.getDay()];
+      const monthName = months[date.getMonth()];
+      const day = date.getDate();
+      const year = date.getFullYear();
+      const hour = selectedHour;
+      const minute = String(selectedMinute).padStart(2, '0');
+      const period = selectedPeriod;
+
+      if (currentStep === 0) {
+        return `${dayName}, ${monthName} ${day}, ${year}`;
+      } else {
+        return `${dayName}, ${monthName} ${day} · ${hour}:${minute} ${period}`;
+      }
     }
 
-    function roundMinutes(date, step){
-      if (!step || step <= 0) return date;
-      const ms = date.getTime();
-      const stepMs = step * 60 * 1000;
-      const rounded = Math.round(ms / stepMs) * stepMs;
-      return new Date(rounded);
+    function updateDisplay() {
+      selectedDisplay.textContent = formatDateTime();
     }
 
-    function isoWithOffset(d){
-      const offMin = -d.getTimezoneOffset();
-      const sign = offMin >= 0 ? "+" : "-";
-      const abs = Math.abs(offMin);
-      const hh = pad2(Math.floor(abs / 60));
-      const mm = pad2(abs % 60);
-      return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}${sign}${hh}:${mm}`;
-    }
-
-    function displayString(d){
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "local";
-      const dtf = new Intl.DateTimeFormat(undefined, {
-        weekday:"short", year:"numeric", month:"short", day:"2-digit",
-        hour:"numeric", minute:"2-digit"
+    function updateStepIndicators() {
+      stepDots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentStep);
       });
-      return { text: dtf.format(d), tz };
     }
 
-    function updatePreview(){
-      const d0 = fromDatetimeLocalValue(elDt.value);
-      if (!d0) {
-        elPreview.textContent = "Pick a date and time";
-        elMeta.textContent = "";
-        return;
+    function showView(step) {
+      views.forEach((view, i) => {
+        view.classList.toggle('active', i === step);
+      });
+      updateStepIndicators();
+      updateDisplay();
+
+      // Update button text
+      if (step === 0) {
+        backBtn.textContent = 'Cancel';
+      } else {
+        backBtn.textContent = 'Back';
       }
-      const step = parseInt(elRounding.value, 10) || 0;
-      const d = roundMinutes(d0, step);
 
-      elDt.value = toDatetimeLocalValue(d);
-
-      const { text, tz } = displayString(d);
-      elPreview.textContent = text;
-      elMeta.textContent = `Timezone: ${tz}   •   EpochMs: ${d.getTime()}   •   ISO: ${isoWithOffset(d)}`;
+      if (step === 2) {
+        nextBtn.textContent = 'Done';
+      } else {
+        nextBtn.textContent = 'Next';
+      }
     }
 
-    function setQuick(mode){
-      const now = new Date();
-      let d = new Date(now);
-      if (mode === "today") {
-        d.setHours(now.getHours(), now.getMinutes(), 0, 0);
-      } else if (mode === "tomorrow") {
-        d.setDate(d.getDate() + 1);
-        d.setHours(now.getHours(), now.getMinutes(), 0, 0);
-      } else if (mode === "nextweek") {
-        d.setDate(d.getDate() + 7);
-        d.setHours(now.getHours(), now.getMinutes(), 0, 0);
-      } else if (mode === "now") {
-        d.setSeconds(0,0);
+    // Calendar rendering
+    function renderCalendar() {
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = '';
+
+      // Day headers
+      const dayHeaders = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+      dayHeaders.forEach(day => {
+        const header = document.createElement('div');
+        header.className = 'calendar-day-header';
+        header.textContent = day;
+        grid.appendChild(header);
+      });
+
+      // Get first day of month and number of days
+      const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+      const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+      const daysInPrevMonth = new Date(calendarYear, calendarMonth, 0).getDate();
+
+      const today = new Date();
+      const isCurrentMonth = today.getMonth() === calendarMonth && today.getFullYear() === calendarYear;
+
+      // Previous month days
+      for (let i = firstDay - 1; i >= 0; i--) {
+        const day = daysInPrevMonth - i;
+        const btn = document.createElement('button');
+        btn.className = 'calendar-day other-month';
+        btn.textContent = day;
+        btn.onclick = () => {
+          calendarMonth--;
+          if (calendarMonth < 0) {
+            calendarMonth = 11;
+            calendarYear--;
+          }
+          selectedDate = new Date(calendarYear, calendarMonth, day);
+          renderCalendar();
+          updateDisplay();
+        };
+        grid.appendChild(btn);
       }
-      elDt.value = toDatetimeLocalValue(d);
-      updatePreview();
+
+      // Current month days
+      for (let day = 1; day <= daysInMonth; day++) {
+        const btn = document.createElement('button');
+        btn.className = 'calendar-day';
+        btn.textContent = day;
+
+        const isSelected = selectedDate.getDate() === day &&
+                          selectedDate.getMonth() === calendarMonth &&
+                          selectedDate.getFullYear() === calendarYear;
+        const isToday = isCurrentMonth && today.getDate() === day;
+
+        if (isSelected) btn.classList.add('selected');
+        if (isToday) btn.classList.add('today');
+
+        btn.onclick = () => {
+          selectedDate = new Date(calendarYear, calendarMonth, day);
+          renderCalendar();
+          updateDisplay();
+        };
+        grid.appendChild(btn);
+      }
+
+      // Next month days
+      const totalCells = grid.children.length - 7; // Subtract day headers
+      const remainingCells = 42 - totalCells - 7; // 6 weeks * 7 days - headers
+      for (let day = 1; day <= remainingCells; day++) {
+        const btn = document.createElement('button');
+        btn.className = 'calendar-day other-month';
+        btn.textContent = day;
+        btn.onclick = () => {
+          calendarMonth++;
+          if (calendarMonth > 11) {
+            calendarMonth = 0;
+            calendarYear++;
+          }
+          selectedDate = new Date(calendarYear, calendarMonth, day);
+          renderCalendar();
+          updateDisplay();
+        };
+        grid.appendChild(btn);
+      }
+
+      // Update month/year buttons
+      const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                     'July', 'August', 'September', 'October', 'November', 'December'];
+      document.getElementById('monthBtn').textContent = months[calendarMonth];
+      document.getElementById('yearBtn').textContent = calendarYear;
     }
 
-    (function init(){
-      let d = new Date();
-      d.setSeconds(0,0);
+    // Time picker rendering
+    function renderTimePicker() {
+      const circle = document.getElementById('timeCircle');
+      circle.innerHTML = '';
 
-      if (initialIso) {
-        const decoded = decodeURIComponent(initialIso);
-        const parsed = new Date(decoded);
-        if (!isNaN(parsed.getTime())) d = parsed;
+      const centerX = 50;
+      const centerY = 50;
+      const hourRadius = 35;
+      const minuteRadius = 22;
+
+      // Hour positions (12, 1, 2, ..., 11)
+      for (let i = 0; i < 12; i++) {
+        const hour = i === 0 ? 12 : i;
+        const angle = (i * 30 - 90) * Math.PI / 180;
+        const x = centerX + hourRadius * Math.cos(angle);
+        const y = centerY + hourRadius * Math.sin(angle);
+
+        const btn = document.createElement('button');
+        btn.className = 'hour-btn';
+        btn.textContent = hour;
+        btn.style.left = `${x}%`;
+        btn.style.top = `${y}%`;
+        btn.style.transform = 'translate(-50%, -50%)';
+
+        if (hour === selectedHour) btn.classList.add('selected');
+
+        btn.onclick = () => {
+          selectedHour = hour;
+          renderTimePicker();
+          updateDisplay();
+        };
+        circle.appendChild(btn);
       }
 
-      elDt.value = toDatetimeLocalValue(d);
-      updatePreview();
-    })();
+      // Minute positions (:00, :15, :30, :45) - diamond buttons
+      const minutes = [0, 15, 30, 45];
+      const minutePositions = [
+        { x: 50, y: 12 },   // :00 top
+        { x: 73, y: 50 },   // :15 right
+        { x: 50, y: 88 },   // :30 bottom
+        { x: 27, y: 50 }    // :45 left
+      ];
 
-    elDt.addEventListener("change", updatePreview);
-    elRounding.addEventListener("change", updatePreview);
+      minutes.forEach((min, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'minute-btn';
+        const span = document.createElement('span');
+        span.textContent = `:${String(min).padStart(2, '0')}`;
+        btn.appendChild(span);
+        btn.style.left = `${minutePositions[i].x}%`;
+        btn.style.top = `${minutePositions[i].y}%`;
+        btn.style.transform = 'translate(-50%, -50%)';
 
-    document.getElementById("qToday").onclick = () => setQuick("today");
-    document.getElementById("qTomorrow").onclick = () => setQuick("tomorrow");
-    document.getElementById("qNextWeek").onclick = () => setQuick("nextweek");
-    document.getElementById("qNow").onclick = () => setQuick("now");
+        if (min === selectedMinute) btn.classList.add('selected');
 
-    document.getElementById("cancel").onclick = () => {
-      returnToShortcuts(cb, { v:1, rid, status:"cancel", type:"datetime", data:null });
+        btn.onclick = () => {
+          selectedMinute = min;
+          renderTimePicker();
+          updateDisplay();
+        };
+        circle.appendChild(btn);
+      });
+
+      // AM/PM buttons
+      const periods = ['AM', 'PM'];
+      const periodPositions = [
+        { x: 85, y: 23 },   // AM top-right
+        { x: 85, y: 77 }    // PM bottom-right
+      ];
+
+      periods.forEach((period, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'period-btn';
+        btn.textContent = period;
+        btn.style.left = `${periodPositions[i].x}%`;
+        btn.style.top = `${periodPositions[i].y}%`;
+        btn.style.transform = 'translate(-50%, -50%)';
+
+        if (period === selectedPeriod) btn.classList.add('selected');
+
+        btn.onclick = () => {
+          selectedPeriod = period;
+          renderTimePicker();
+          updateDisplay();
+        };
+        circle.appendChild(btn);
+      });
+
+      // Update time display
+      const hour = selectedHour;
+      const minute = String(selectedMinute).padStart(2, '0');
+      document.getElementById('timeDisplay').textContent = `${hour}:${minute} ${selectedPeriod}`;
+    }
+
+    // Month/Year picker
+    document.getElementById('monthBtn').onclick = () => {
+      const picker = document.getElementById('monthPicker');
+      const grid = document.getElementById('monthGrid');
+      grid.innerHTML = '';
+
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      months.forEach((month, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'picker-item';
+        btn.textContent = month;
+        if (i === calendarMonth) btn.classList.add('selected');
+        btn.onclick = () => {
+          calendarMonth = i;
+          renderCalendar();
+          picker.classList.remove('active');
+        };
+        grid.appendChild(btn);
+      });
+
+      picker.classList.add('active');
     };
 
-    document.getElementById("done").onclick = () => {
-      const d0 = fromDatetimeLocalValue(elDt.value);
-      if (!d0) return;
-      const step = parseInt(elRounding.value, 10) || 0;
-      const d = roundMinutes(d0, step);
-      const { text, tz } = displayString(d);
+    document.getElementById('yearBtn').onclick = () => {
+      const picker = document.getElementById('yearPicker');
+      const grid = document.getElementById('yearGrid');
+      grid.innerHTML = '';
 
-      const payload = {
-        v: 1,
-        rid,
-        status: "ok",
-        type: "datetime",
-        data: {
-          iso: isoWithOffset(d),
-          epochMs: d.getTime(),
-          tz,
-          display: text,
-          roundingMin: step
-        }
+      const currentYear = new Date().getFullYear();
+      const years = [];
+      for (let i = currentYear - 5; i <= currentYear + 10; i++) {
+        years.push(i);
+      }
+
+      years.forEach(year => {
+        const btn = document.createElement('button');
+        btn.className = 'picker-item';
+        btn.textContent = year;
+        if (year === calendarYear) btn.classList.add('selected');
+        btn.onclick = () => {
+          calendarYear = year;
+          renderCalendar();
+          picker.classList.remove('active');
+        };
+        grid.appendChild(btn);
+      });
+
+      picker.classList.add('active');
+    };
+
+    // Close pickers when clicking overlay
+    document.getElementById('monthPicker').onclick = (e) => {
+      if (e.target.id === 'monthPicker') {
+        e.target.classList.remove('active');
+      }
+    };
+    document.getElementById('yearPicker').onclick = (e) => {
+      if (e.target.id === 'yearPicker') {
+        e.target.classList.remove('active');
+      }
+    };
+
+    // Month navigation
+    document.getElementById('prevMonth').onclick = () => {
+      calendarMonth--;
+      if (calendarMonth < 0) {
+        calendarMonth = 11;
+        calendarYear--;
+      }
+      renderCalendar();
+    };
+
+    document.getElementById('nextMonth').onclick = () => {
+      calendarMonth++;
+      if (calendarMonth > 11) {
+        calendarMonth = 0;
+        calendarYear++;
+      }
+      renderCalendar();
+    };
+
+    // Duration tokens
+    document.querySelectorAll('.duration-token').forEach(token => {
+      token.onclick = () => {
+        selectedDuration = parseInt(token.dataset.duration);
+        document.getElementById('durationInput').value = selectedDuration;
       };
+    });
 
-      returnToShortcuts(cb, payload);
+    document.getElementById('durationInput').oninput = (e) => {
+      selectedDuration = parseInt(e.target.value) || 1;
     };
+
+    // Navigation
+    backBtn.onclick = () => {
+      if (currentStep === 0) {
+        returnToShortcuts(cb, { v:1, rid, status:"cancel", type:"datetime", data:null });
+      } else {
+        currentStep--;
+        showView(currentStep);
+        if (currentStep === 1) renderTimePicker();
+      }
+    };
+
+    nextBtn.onclick = () => {
+      if (currentStep < 2) {
+        currentStep++;
+        showView(currentStep);
+        if (currentStep === 1) renderTimePicker();
+      } else {
+        // Done - return result
+        const date = new Date(selectedDate);
+        const hour24 = selectedPeriod === 'PM' ? (selectedHour % 12) + 12 : (selectedHour % 12);
+        date.setHours(hour24, selectedMinute, 0, 0);
+
+        function pad2(n){ return String(n).padStart(2,"0"); }
+        function isoWithOffset(d){
+          const offMin = -d.getTimezoneOffset();
+          const sign = offMin >= 0 ? "+" : "-";
+          const abs = Math.abs(offMin);
+          const hh = pad2(Math.floor(abs / 60));
+          const mm = pad2(abs % 60);
+          return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}${sign}${hh}:${mm}`;
+        }
+
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "local";
+        const dtf = new Intl.DateTimeFormat(undefined, {
+          weekday:"short", year:"numeric", month:"short", day:"2-digit",
+          hour:"numeric", minute:"2-digit"
+        });
+
+        const payload = {
+          v: 1,
+          rid,
+          status: "ok",
+          type: "datetime",
+          data: {
+            iso: isoWithOffset(date),
+            epochMs: date.getTime(),
+            tz,
+            display: dtf.format(date),
+            durationMin: selectedDuration
+          }
+        };
+
+        returnToShortcuts(cb, payload);
+      }
+    };
+
+    // Initialize
+    renderCalendar();
+    showView(0);
   </script>
 </body>
 </html>
