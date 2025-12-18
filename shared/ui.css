@@ -12,9 +12,9 @@
 *{ box-sizing:border-box; }
 html,body{ height:100%; margin:0; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui; color:var(--text); }
 body{
-  background: radial-gradient(1200px 900px at 15% 10%, #192a6b 0%, transparent 55%),
-              radial-gradient(900px 700px at 80% 30%, #6b2a7a 0%, transparent 55%),
-              linear-gradient(180deg, #050712, #070b14);
+  background: radial-gradient(1200px 900px at 15% 10%, #333333 0%, transparent 55%),
+              radial-gradient(900px 700px at 80% 30%, #444444 0%, transparent 55%),
+              linear-gradient(180deg, #191929, #242424);
 }
 
 .shell{ padding:16px; max-width:560px; margin:0 auto; }
