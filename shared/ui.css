@@ -54,10 +54,10 @@ body{
   border-radius: 20px;
   padding: 1px;
   background: linear-gradient(45deg, #000000, #ffffff50, #000000) border-box;
-  -webkit-mask:
+/*  -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
+  -webkit-mask-composite: xor;*/
   mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -79,10 +79,10 @@ body{
   border-radius: 999px;
   padding: 1px;
   background: linear-gradient(200deg, #000000, #ffffff50, #000000) border-box;
-  -webkit-mask:
+  /*-webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
+  -webkit-mask-composite: xor;*/
   mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
