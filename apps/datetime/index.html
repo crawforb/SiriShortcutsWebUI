@@ -246,13 +246,21 @@
       const today = new Date();
       const isCurrentMonth = today.getMonth() === calendarMonth && today.getFullYear() === calendarYear;
 
+      // Helper to create calendar day button
+      function createDayBtn(day, isOtherMonth, onClick) {
+        const btn = document.createElement('button');
+        btn.className = 'calendar-day' + (isOtherMonth ? ' other-month' : '');
+        const span = document.createElement('span');
+        span.textContent = day;
+        btn.appendChild(span);
+        btn.onclick = onClick;
+        return btn;
+      }
+
       // Previous month days
       for (let i = firstDay - 1; i >= 0; i--) {
         const day = daysInPrevMonth - i;
-        const btn = document.createElement('button');
-        btn.className = 'calendar-day other-month';
-        btn.textContent = day;
-        btn.onclick = () => {
+        const btn = createDayBtn(day, true, () => {
           calendarMonth--;
           if (calendarMonth < 0) {
             calendarMonth = 11;
@@ -261,37 +269,31 @@
           selectedDate = new Date(calendarYear, calendarMonth, day);
           renderCalendar();
           updateDisplay();
-          // Auto-advance to time picker
           currentStep = 1;
           showView(currentStep);
           renderTimePicker();
-        };
+        });
         grid.appendChild(btn);
       }
 
       // Current month days
       for (let day = 1; day <= daysInMonth; day++) {
-        const btn = document.createElement('button');
-        btn.className = 'calendar-day';
-        btn.textContent = day;
-
         const isSelected = selectedDate.getDate() === day &&
                           selectedDate.getMonth() === calendarMonth &&
                           selectedDate.getFullYear() === calendarYear;
         const isToday = isCurrentMonth && today.getDate() === day;
 
-        if (isToday) btn.classList.add('today');
-        if (isSelected) btn.classList.add('selected');
-
-        btn.onclick = () => {
+        const btn = createDayBtn(day, false, () => {
           selectedDate = new Date(calendarYear, calendarMonth, day);
           renderCalendar();
           updateDisplay();
-          // Auto-advance to time picker
           currentStep = 1;
           showView(currentStep);
           renderTimePicker();
-        };
+        });
+
+        if (isToday) btn.classList.add('today');
+        if (isSelected) btn.classList.add('selected');
         grid.appendChild(btn);
       }
 
@@ -299,10 +301,7 @@
       const totalCells = grid.children.length - 7;
       const remainingCells = 42 - totalCells - 7;
       for (let day = 1; day <= remainingCells; day++) {
-        const btn = document.createElement('button');
-        btn.className = 'calendar-day other-month';
-        btn.textContent = day;
-        btn.onclick = () => {
+        const btn = createDayBtn(day, true, () => {
           calendarMonth++;
           if (calendarMonth > 11) {
             calendarMonth = 0;
@@ -311,11 +310,10 @@
           selectedDate = new Date(calendarYear, calendarMonth, day);
           renderCalendar();
           updateDisplay();
-          // Auto-advance to time picker
           currentStep = 1;
           showView(currentStep);
           renderTimePicker();
-        };
+        });
         grid.appendChild(btn);
       }
 
