@@ -162,18 +162,21 @@ input[type="datetime-local"], select{
 
 /* Month/Year selector pill */
 .month-year-selector {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
   margin-bottom: 12px;
 }
 .month-year-pill {
-  display: flex;
+  display: inline-flex !important;
+  flex-direction: row !important;
   background: rgba(160,160,160,.12);
   border-radius: 8px;
   overflow: hidden;
 }
 .month-year-pill button {
+  display: inline-block !important;
   padding: 8px 14px;
   border: none;
   background: transparent;
@@ -188,9 +191,11 @@ input[type="datetime-local"], select{
 .month-year-pill .divider {
   width: 1px;
   background: rgba(160,160,160,.25);
+  align-self: stretch;
 }
 .nav-arrows {
-  display: flex;
+  display: inline-flex !important;
+  flex-direction: row !important;
   gap: 8px;
 }
 .nav-arrow-btn {
@@ -203,7 +208,7 @@ input[type="datetime-local"], select{
   font-size: 22px;
   font-weight: 600;
   cursor: pointer;
-  display: flex;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
 }
@@ -213,8 +218,8 @@ input[type="datetime-local"], select{
 
 /* Calendar grid styles */
 .calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
   gap: 4px;
 }
 .calendar-day-header {
@@ -225,18 +230,27 @@ input[type="datetime-local"], select{
   font-weight: 600;
 }
 .calendar-day {
-  aspect-ratio: 1;
+  width: 100%;
+  padding-top: 100%; /* Creates 1:1 aspect ratio */
+  position: relative;
   border-radius: 50%;
   border: none;
   background: transparent;
   color: var(--text);
   font-weight: 500;
   cursor: pointer;
+  font-size: 16px;
+  transition: background 0.15s ease;
+}
+.calendar-day span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  transition: background 0.15s ease;
 }
 .calendar-day:hover {
   background: rgba(160,160,160,.12);
@@ -258,20 +272,21 @@ input[type="datetime-local"], select{
 
 /* Picker overlay */
 .picker-overlay {
-  position: fixed;
+  position: fixed !important;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background: rgba(0,0,0,.7);
-  display: none;
+  display: none !important;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .picker-overlay.active {
-  display: flex;
+  display: flex !important;
 }
 .picker-panel {
   background: var(--glass);
