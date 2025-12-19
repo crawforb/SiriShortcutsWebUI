@@ -31,17 +31,19 @@ body{
 .row{ display:flex; gap:2px; flex-wrap:wrap; align-items:center; }
 
 .card{
-  border-radius: 16px;
-  background: rgba(0, 0, 0, 0.10);
-  padding: 16px;
   position: relative;
+  border-radius: 20px;
+  background: #00000020;
+  box-shadow: 0 20px 20px rgba(0, 0, 0, 0.2);
+  padding: 16px;
 }
 
 /* Glass card with diagonal gradient stroke */
 .glass-card {
   position: relative;
-  background: rgba(0, 0, 0, 0.10);
-  border-radius: 16px;
+  border-radius: 20px;
+  background: #00000020;
+  box-shadow: 0 20px 20px rgba(0, 0, 0, 0.2);
   padding: 16px;
   border: none;
 }
@@ -49,18 +51,16 @@ body{
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 1px;
-  background: linear-gradient(
-    135deg,
-    rgba(60, 60, 60, 0.5) 0%,
-    rgba(255, 255, 255, 0.5) 50%,
-    rgba(60, 60, 60, 0.5) 100%
-  );
+  background: linear-gradient(45deg, #000000, #ffffff50, #000000) border-box;
   -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   mask-composite: exclude;
   pointer-events: none;
 }
@@ -68,24 +68,24 @@ body{
 /* Glass pill with gradient stroke */
 .glass-pill {
   position: relative;
-  background: rgba(0, 0, 0, 0.10) !important;
+  border-radius: 999px;
+  background: #00000020 !important;
+  box-shadow: 0 20px 20px rgba(0, 0, 0, 0.2);
 }
 .glass-pill::before {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 8px;
+  border-radius: 999px;
   padding: 1px;
-  background: linear-gradient(
-    135deg,
-    rgba(60, 60, 60, 0.5) 0%,
-    rgba(255, 255, 255, 0.5) 50%,
-    rgba(60, 60, 60, 0.5) 100%
-  );
+  background: linear-gradient(45deg, #000000, #ffffff50, #000000) border-box;
   -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   mask-composite: exclude;
   pointer-events: none;
 }
