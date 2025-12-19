@@ -619,10 +619,10 @@
       // Minute positions (:00, :15, :30, :45) - diamond buttons rotated 45deg
       const minutes = [0, 15, 30, 45];
       const minutePositions = [
-        { x: 50, y: 18 },   // :00 top
-        { x: 68, y: 50 },   // :15 right
-        { x: 50, y: 82 },   // :30 bottom
-        { x: 32, y: 50 }    // :45 left
+        { x: 50, y: 22 },   // :00 top
+        { x: 70, y: 50 },   // :15 right
+        { x: 50, y: 78 },   // :30 bottom
+        { x: 30, y: 50 }    // :45 left
       ];
 
       minutes.forEach((min, i) => {
@@ -645,11 +645,11 @@
         circle.appendChild(btn);
       });
 
-      // AM/PM buttons
+      // AM/PM buttons - positioned at bottom
       const periods = ['AM', 'PM'];
       const periodPositions = [
-        { x: 85, y: 23 },   // AM top-right
-        { x: 85, y: 77 }    // PM bottom-right
+        { x: 35, y: 90 },   // AM bottom-left
+        { x: 65, y: 90 }    // PM bottom-right
       ];
 
       periods.forEach((period, i) => {
