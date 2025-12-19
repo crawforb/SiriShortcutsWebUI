@@ -6,6 +6,25 @@
   <title>DateTime Picker</title>
   <link rel="stylesheet" href="../../shared/ui.css">
   <style>
+    /* Header cancel/back button */
+    .header-cancel-btn {
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(160,160,160,.20);
+      background: rgba(160,160,160,.08);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      z-index: 10;
+    }
+    .header-cancel-btn:hover {
+      background: rgba(160,160,160,.15);
+    }
+
     /* Step indicator */
     .steps {
       display: flex;
@@ -123,7 +142,7 @@
     .time-picker {
       position: relative;
       width: 100%;
-      max-width: 360px;
+      max-width: 400px;
       margin: 0 auto;
       padding: 20px;
     }
@@ -159,13 +178,13 @@
       font-size: 18px;
     }
     .minute-btn {
-      width: 68px;
-      height: 68px;
+      width: 64px;
+      height: 64px;
       font-size: 15px;
-      border-radius: 16px; /* Diamond shape - more rounded square */
-      transform: rotate(45deg);
+      border-radius: 14px;
     }
     .minute-btn span {
+      display: block;
       transform: rotate(-45deg);
     }
     .period-btn {
@@ -292,7 +311,8 @@
 <body>
   <div class="shell">
     <div class="sheet">
-      <div class="header">
+      <div class="header" style="position: relative;">
+        <button class="header-cancel-btn" id="headerCancelBtn">Cancel</button>
         <div class="steps">
           <div class="step-dot active" id="step-dot-0"></div>
           <div class="step-dot" id="step-dot-1"></div>
@@ -343,6 +363,9 @@
               <div class="duration-token" data-duration="120">2 hours</div>
               <div class="duration-token" data-duration="180">3 hours</div>
             </div>
+            <div style="margin-top: 24px; text-align: center;">
+              <button class="btn btnPrimary" id="doneBtn" style="padding: 12px 32px; font-size: 16px;">Done</button>
+            </div>
           </div>
         </div>
       </div>
@@ -361,14 +384,6 @@
     <div class="picker-panel">
       <div class="label">Select Year</div>
       <div class="picker-grid" id="yearGrid"></div>
-    </div>
-  </div>
-
-  <div class="bar">
-    <div class="barInner">
-      <button class="btn" id="backBtn">Back</button>
-      <div style="flex:1;"></div>
-      <button class="btn btnPrimary" id="nextBtn">Next</button>
     </div>
   </div>
 
@@ -414,8 +429,7 @@
       document.getElementById('step-dot-2')
     ];
     const selectedDisplay = document.getElementById('selectedDisplay');
-    const backBtn = document.getElementById('backBtn');
-    const nextBtn = document.getElementById('nextBtn');
+    const headerCancelBtn = document.getElementById('headerCancelBtn');
 
     // Format display
     function formatDateTime() {
@@ -460,15 +474,9 @@
 
       // Update button text
       if (step === 0) {
-        backBtn.textContent = 'Cancel';
+        headerCancelBtn.textContent = 'Cancel';
       } else {
-        backBtn.textContent = 'Back';
-      }
-
-      if (step === 2) {
-        nextBtn.textContent = 'Done';
-      } else {
-        nextBtn.textContent = 'Next';
+        headerCancelBtn.textContent = 'Back';
       }
     }
 
@@ -509,6 +517,10 @@
           selectedDate = new Date(calendarYear, calendarMonth, day);
           renderCalendar();
           updateDisplay();
+          // Auto-advance to time picker
+          currentStep = 1;
+          showView(currentStep);
+          renderTimePicker();
         };
         grid.appendChild(btn);
       }
@@ -531,6 +543,10 @@
           selectedDate = new Date(calendarYear, calendarMonth, day);
           renderCalendar();
           updateDisplay();
+          // Auto-advance to time picker
+          currentStep = 1;
+          showView(currentStep);
+          renderTimePicker();
         };
         grid.appendChild(btn);
       }
@@ -551,6 +567,10 @@
           selectedDate = new Date(calendarYear, calendarMonth, day);
           renderCalendar();
           updateDisplay();
+          // Auto-advance to time picker
+          currentStep = 1;
+          showView(currentStep);
+          renderTimePicker();
         };
         grid.appendChild(btn);
       }
@@ -596,13 +616,13 @@
         circle.appendChild(btn);
       }
 
-      // Minute positions (:00, :15, :30, :45) - diamond buttons
+      // Minute positions (:00, :15, :30, :45) - diamond buttons rotated 45deg
       const minutes = [0, 15, 30, 45];
       const minutePositions = [
-        { x: 50, y: 12 },   // :00 top
-        { x: 73, y: 50 },   // :15 right
-        { x: 50, y: 88 },   // :30 bottom
-        { x: 27, y: 50 }    // :45 left
+        { x: 50, y: 18 },   // :00 top
+        { x: 68, y: 50 },   // :15 right
+        { x: 50, y: 82 },   // :30 bottom
+        { x: 32, y: 50 }    // :45 left
       ];
 
       minutes.forEach((min, i) => {
@@ -613,7 +633,7 @@
         btn.appendChild(span);
         btn.style.left = `${minutePositions[i].x}%`;
         btn.style.top = `${minutePositions[i].y}%`;
-        btn.style.transform = 'translate(-50%, -50%)';
+        btn.style.transform = 'translate(-50%, -50%) rotate(45deg)';
 
         if (min === selectedMinute) btn.classList.add('selected');
 
@@ -646,6 +666,9 @@
           selectedPeriod = period;
           renderTimePicker();
           updateDisplay();
+          // Auto-advance to duration picker
+          currentStep = 2;
+          showView(currentStep);
         };
         circle.appendChild(btn);
       });
@@ -750,59 +773,58 @@
       selectedDuration = parseInt(e.target.value) || 1;
     };
 
+    // Done button
+    document.getElementById('doneBtn').onclick = () => {
+      finalizeDateTimePicker();
+    };
+
+    // Function to finalize and return result
+    function finalizeDateTimePicker() {
+      const date = new Date(selectedDate);
+      const hour24 = selectedPeriod === 'PM' ? (selectedHour % 12) + 12 : (selectedHour % 12);
+      date.setHours(hour24, selectedMinute, 0, 0);
+
+      function pad2(n){ return String(n).padStart(2,"0"); }
+      function isoWithOffset(d){
+        const offMin = -d.getTimezoneOffset();
+        const sign = offMin >= 0 ? "+" : "-";
+        const abs = Math.abs(offMin);
+        const hh = pad2(Math.floor(abs / 60));
+        const mm = pad2(abs % 60);
+        return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}${sign}${hh}:${mm}`;
+      }
+
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "local";
+      const dtf = new Intl.DateTimeFormat(undefined, {
+        weekday:"short", year:"numeric", month:"short", day:"2-digit",
+        hour:"numeric", minute:"2-digit"
+      });
+
+      const payload = {
+        v: 1,
+        rid,
+        status: "ok",
+        type: "datetime",
+        data: {
+          iso: isoWithOffset(date),
+          epochMs: date.getTime(),
+          tz,
+          display: dtf.format(date),
+          durationMin: selectedDuration
+        }
+      };
+
+      returnToShortcuts(cb, payload);
+    }
+
     // Navigation
-    backBtn.onclick = () => {
+    headerCancelBtn.onclick = () => {
       if (currentStep === 0) {
         returnToShortcuts(cb, { v:1, rid, status:"cancel", type:"datetime", data:null });
       } else {
         currentStep--;
         showView(currentStep);
         if (currentStep === 1) renderTimePicker();
-      }
-    };
-
-    nextBtn.onclick = () => {
-      if (currentStep < 2) {
-        currentStep++;
-        showView(currentStep);
-        if (currentStep === 1) renderTimePicker();
-      } else {
-        // Done - return result
-        const date = new Date(selectedDate);
-        const hour24 = selectedPeriod === 'PM' ? (selectedHour % 12) + 12 : (selectedHour % 12);
-        date.setHours(hour24, selectedMinute, 0, 0);
-
-        function pad2(n){ return String(n).padStart(2,"0"); }
-        function isoWithOffset(d){
-          const offMin = -d.getTimezoneOffset();
-          const sign = offMin >= 0 ? "+" : "-";
-          const abs = Math.abs(offMin);
-          const hh = pad2(Math.floor(abs / 60));
-          const mm = pad2(abs % 60);
-          return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}${sign}${hh}:${mm}`;
-        }
-
-        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "local";
-        const dtf = new Intl.DateTimeFormat(undefined, {
-          weekday:"short", year:"numeric", month:"short", day:"2-digit",
-          hour:"numeric", minute:"2-digit"
-        });
-
-        const payload = {
-          v: 1,
-          rid,
-          status: "ok",
-          type: "datetime",
-          data: {
-            iso: isoWithOffset(date),
-            epochMs: date.getTime(),
-            tz,
-            display: dtf.format(date),
-            durationMin: selectedDuration
-          }
-        };
-
-        returnToShortcuts(cb, payload);
       }
     };
 
