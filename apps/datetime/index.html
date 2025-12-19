@@ -64,22 +64,17 @@
 <body>
   <div class="shell">
     <div class="sheet">
-      <div class="picker-header">
-        <button class="picker-close-btn" id="closeBtn">&#x2715;</button>
-        <span class="picker-title">Pick Date and Time</span>
-      </div>
-
-      <div class="content" style="padding-bottom: 20px;">
+      <div class="content">
         <!-- Combined Date & Time View -->
         <div class="view active" id="view-datetime">
-          <div class="datetime-display">
-            <div class="datetime-display-date" id="displayDate">Thursday, December 25, 2025</div>
-            <div class="datetime-display-time" id="displayTime">12:00 PM</div>
-          </div>
+          <div class="card glass-card">
+            <div class="datetime-display">
+              <div class="datetime-display-date" id="displayDate">Thursday, December 25, 2025</div>
+              <div class="datetime-display-time" id="displayTime">12:00 PM</div>
+            </div>
 
-          <div class="card">
             <div class="month-year-selector">
-              <div class="month-year-pill">
+              <div class="month-year-pill glass-pill">
                 <button id="monthBtn">December</button>
                 <div class="divider"></div>
                 <button id="yearBtn">2025</button>
@@ -95,12 +90,12 @@
 
         <!-- Time Selection View -->
         <div class="view" id="view-time">
-          <div class="datetime-display">
-            <div class="datetime-display-date" id="displayDate2">Thursday, December 25, 2025</div>
-            <div class="datetime-display-time" id="displayTime2">12:00 PM</div>
-          </div>
+          <div class="card glass-card">
+            <div class="datetime-display">
+              <div class="datetime-display-date" id="displayDate2">Thursday, December 25, 2025</div>
+              <div class="datetime-display-time" id="displayTime2">12:00 PM</div>
+            </div>
 
-          <div class="card">
             <div class="time-picker-container">
               <div class="time-circle" id="timeCircle"></div>
             </div>
@@ -109,7 +104,7 @@
 
         <!-- Duration Selection View -->
         <div class="view" id="view-duration">
-          <div class="card">
+          <div class="card glass-card">
             <div class="label" style="text-align: center; font-size: 14px;">How long?</div>
             <div class="duration-input-group">
               <input type="number" class="duration-input" id="durationInput" value="30" min="1" max="1440" />
@@ -547,18 +542,6 @@
 
       returnToShortcuts(cb, payload);
     }
-
-    // Close button - cancel and return
-    document.getElementById('closeBtn').onclick = () => {
-      if (currentStep === 0) {
-        returnToShortcuts(cb, { v:1, rid, status:"cancel", type:"datetime", data:null });
-      } else {
-        currentStep--;
-        showView(currentStep);
-        if (currentStep === 0) renderCalendar();
-        if (currentStep === 1) renderTimePicker();
-      }
-    };
 
     // Initialize
     renderCalendar();
