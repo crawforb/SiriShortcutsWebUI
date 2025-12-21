@@ -19,7 +19,7 @@
   <meta name="theme-color" content="#FFFF00" media="(prefers-color-scheme: light)"/>
   <meta name="theme-color" content="#0000FF" media="(prefers-color-scheme: dark)"/>
   
-  <title>Tailwind Color Picker</title>
+  <title>Colour Picker</title>
   <link rel="stylesheet" href="../../shared/ui.css">
   <style>
     .colorGrid {
@@ -43,40 +43,42 @@
       box-shadow: 0 4px 12px rgba(0,0,0,.5);
     }
     .colorSwatch.selected {
-      box-shadow: inset 0 0 0 3px rgba(255,255,255,.9), 0 0 0 3px rgba(255,255,255,.2);
+      box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--text) 85%, transparent),
+                  0 0 0 3px var(--stroke-strong);
       z-index: 5;
-    }
-    .bottomBarTitle {
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--text);
-      margin: 0;
     }
     .selectedColorPreview {
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: center;
+      gap: 10px;
       flex: 1;
+      min-width: 0;
     }
     .selectedColorSwatch {
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      border: 2px solid rgba(255,255,255,.3);
+      border: 2px solid var(--stroke);
       flex-shrink: 0;
+      background: var(--glass-soft);
     }
     .selectedColorInfo {
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 15px;
+      font-weight: 700;
       color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     /* Override bar styles for larger tappable area */
     .bar {
       padding: 12px 12px 12px;
     }
     .barInner {
-      padding: 16px;
-      gap: 12px;
+      padding: 14px;
+      gap: 16px;
+      align-items: center;
     }
     .btn {
       padding: 14px 24px;
@@ -89,7 +91,7 @@
   <div class="shell">
     <div class="sheet">
       <div class="content">
-        <div class="card">
+        <div class="card glass-card">
           <div id="colorCategories"></div>
         </div>
       </div>
@@ -98,13 +100,10 @@
 
   <div class="bar">
     <div class="barInner">
-      <div style="flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 8px 0;">
-        <button class="btn" id="cancel">Cancel</button>
-        <div id="selectedColorPreview" class="selectedColorPreview" style="display: none;">
-          <div id="bottomColorSwatch" class="selectedColorSwatch"></div>
-          <div id="bottomColorInfo" class="selectedColorInfo"></div>
-        </div>
-        <p class="bottomBarTitle">Colour Picker</p>
+      <button class="btn" id="cancel">Cancel</button>
+      <div id="selectedColorPreview" class="selectedColorPreview">
+        <div id="bottomColorSwatch" class="selectedColorSwatch"></div>
+        <div id="bottomColorInfo" class="selectedColorInfo">Select a colour</div>
       </div>
       <button class="btn btnPrimary" id="done" disabled>Done</button>
     </div>
@@ -270,7 +269,6 @@
       };
 
       // Update bottom bar preview
-      selectedColorPreview.style.display = 'flex';
       bottomColorSwatch.style.backgroundColor = hex;
       bottomColorInfo.textContent = `${colorName}`;
 
