@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="theme-color" content="#191919" />
+  <meta name="theme-color" content="#F4F5F9" media="(prefers-color-scheme: light)" />
+  <title>Shared UI Review</title>
+  <link rel="stylesheet" href="../../shared/ui.css">
+  <style>
+    .section {
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 0 0 12px;
+    }
+    .demo-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .theme-toggle {
+      display: inline-flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .variable-grid {
+      display: grid;
+      grid-template-columns: minmax(120px, 1fr) 2fr;
+      gap: 10px 12px;
+      align-items: center;
+    }
+    .variable-input {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: var(--glass-soft);
+      color: var(--text);
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+    .variable-input:focus {
+      outline: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      border-color: var(--accent);
+    }
+    .review-overlay.picker-overlay {
+      position: relative !important;
+      inset: auto !important;
+      display: flex !important;
+      border-radius: 16px;
+      min-height: 220px;
+      padding: 16px;
+      align-items: center;
+      justify-content: center;
+    }
+    .time-demo {
+      max-width: 320px;
+      margin: 0 auto;
+    }
+    .time-circle .time-btn:nth-child(1) {
+      top: 8%;
+      left: 42%;
+    }
+    .time-circle .time-btn:nth-child(2) {
+      top: 40%;
+      right: 6%;
+    }
+    .time-circle .time-btn:nth-child(3) {
+      bottom: 6%;
+      left: 42%;
+    }
+    .time-circle .time-btn:nth-child(4) {
+      top: 40%;
+      left: 6%;
+    }
+    .calendar-demo {
+      max-width: 320px;
+      margin: 0 auto;
+    }
+    .bar-demo {
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="sheet">
+      <div class="header">
+        <h1 class="title">Shared UI Review</h1>
+        <p class="sub">Explore shared classes, switch themes, and export CSS variable overrides.</p>
+      </div>
+      <div class="content">
+        <div class="card glass-card section">
+          <div class="section-title">Theme controls</div>
+          <div class="theme-toggle">
+            <button class="chip" data-theme-option="auto">Auto</button>
+            <button class="chip" data-theme-option="light">Light</button>
+            <button class="chip" data-theme-option="dark">Dark</button>
+          </div>
+          <p class="small" style="margin-top: 10px;">Use the toggle to preview light/dark styling on shared UI surfaces.</p>
+        </div>
+
+        <div class="card glass-card section">
+          <div class="section-title">CSS variables</div>
+          <div class="variable-grid" id="variableGrid"></div>
+          <div class="demo-row" style="margin-top: 12px;">
+            <button class="btn" id="resetVars">Reset edits</button>
+            <button class="btn btnPrimary" id="exportVars">Export CSS</button>
+          </div>
+        </div>
+
+        <div class="card glass-card section">
+          <div class="section-title">Buttons, chips, text</div>
+          <div class="demo-row">
+            <button class="btn">Button</button>
+            <button class="btn btnPrimary">Primary</button>
+            <span class="chip">Chip</span>
+            <span class="preview">Preview text</span>
+            <span class="small">Small label</span>
+          </div>
+        </div>
+
+        <div class="card glass-card section">
+          <div class="section-title">Inputs & labels</div>
+          <label class="label" for="demoDatetime">Date input</label>
+          <input id="demoDatetime" type="datetime-local" />
+          <label class="label" for="demoSelect" style="margin-top: 10px; display: block;">Select</label>
+          <select id="demoSelect">
+            <option>Option A</option>
+            <option>Option B</option>
+          </select>
+        </div>
+
+        <div class="card glass-card section">
+          <div class="section-title">Picker header</div>
+          <div class="picker-header" style="border-radius: 14px;">
+            <button class="picker-close-btn" aria-label="Close">×</button>
+            <div class="picker-title">Picker Title</div>
+          </div>
+        </div>
+
+        <div class="card glass-card section">
+          <div class="section-title">Datetime display</div>
+          <div class="datetime-display">
+            <div class="datetime-display-date">Thursday, December 25, 2025</div>
+            <div class="datetime-display-time">12:00 PM</div>
+          </div>
+        </div>
+
+        <div class="card glass-card section calendar-demo">
+          <div class="section-title">Calendar controls</div>
+          <div class="month-year-selector">
+            <div class="month-year-pill glass-pill">
+              <button>December</button>
+              <div class="divider"></div>
+              <button>2025</button>
+            </div>
+            <div class="nav-arrows">
+              <button class="nav-arrow-btn">‹</button>
+              <button class="nav-arrow-btn">›</button>
+            </div>
+          </div>
+          <div class="calendar-grid">
+            <div class="calendar-day-header">SUN</div>
+            <div class="calendar-day-header">MON</div>
+            <div class="calendar-day-header">TUE</div>
+            <div class="calendar-day-header">WED</div>
+            <div class="calendar-day-header">THU</div>
+            <div class="calendar-day-header">FRI</div>
+            <div class="calendar-day-header">SAT</div>
+            <button class="calendar-day other-month"><span>30</span></button>
+            <button class="calendar-day today"><span>1</span></button>
+            <button class="calendar-day selected"><span>2</span></button>
+            <button class="calendar-day"><span>3</span></button>
+            <button class="calendar-day"><span>4</span></button>
+            <button class="calendar-day"><span>5</span></button>
+            <button class="calendar-day"><span>6</span></button>
+          </div>
+        </div>
+
+        <div class="card glass-card section time-demo">
+          <div class="section-title">Time picker</div>
+          <div class="time-picker-container">
+            <div class="time-display-large">08:30</div>
+            <div class="time-circle">
+              <button class="time-btn hour-btn">8</button>
+              <button class="time-btn hour-btn">3</button>
+              <button class="time-btn hour-btn selected">6</button>
+              <button class="time-btn hour-btn">12</button>
+            </div>
+            <div class="demo-row" style="justify-content: center; margin-top: 16px;">
+              <button class="time-btn minute-btn">:15</button>
+              <button class="time-btn minute-btn selected">:30</button>
+              <button class="time-btn period-btn">AM</button>
+              <button class="time-btn period-btn selected">PM</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card glass-card section">
+          <div class="section-title">Picker overlay</div>
+          <div class="review-overlay picker-overlay active">
+            <div class="picker-panel">
+              <div class="label">Select Option</div>
+              <div class="picker-grid">
+                <button class="picker-item">One</button>
+                <button class="picker-item selected">Two</button>
+                <button class="picker-item">Three</button>
+                <button class="picker-item">Four</button>
+                <button class="picker-item">Five</button>
+                <button class="picker-item">Six</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bar bar-demo">
+          <div class="barInner">
+            <button class="btn">Cancel</button>
+            <div class="row" style="flex: 1; justify-content: center;">
+              <span class="preview">Bottom bar preview</span>
+            </div>
+            <button class="btn btnPrimary">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const root = document.documentElement;
+    const themeButtons = document.querySelectorAll('[data-theme-option]');
+
+    function setTheme(theme) {
+      themeButtons.forEach(btn => btn.classList.toggle('selected', btn.dataset.themeOption === theme));
+      if (theme === 'auto') {
+        root.removeAttribute('data-theme');
+      } else {
+        root.setAttribute('data-theme', theme);
+      }
+      syncVarInputs();
+    }
+
+    themeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        setTheme(btn.dataset.themeOption);
+      });
+    });
+
+    const editableVars = [
+      { name: '--bg0', label: 'Base background' },
+      { name: '--app-bg', label: 'App background' },
+      { name: '--glass', label: 'Glass surface' },
+      { name: '--glass-strong', label: 'Glass strong' },
+      { name: '--glass-soft', label: 'Glass soft' },
+      { name: '--stroke', label: 'Stroke' },
+      { name: '--stroke-strong', label: 'Stroke strong' },
+      { name: '--text', label: 'Text' },
+      { name: '--muted', label: 'Muted text' },
+      { name: '--shadow', label: 'Shadow' },
+      { name: '--shadow-strong', label: 'Shadow strong' },
+      { name: '--shadow-subtle', label: 'Shadow subtle' },
+      { name: '--radius', label: 'Radius' },
+      { name: '--accent', label: 'Accent' },
+      { name: '--accent-strong', label: 'Accent strong' },
+      { name: '--overlay', label: 'Overlay' },
+      { name: '--glass-gradient', label: 'Glass gradient' },
+      { name: '--glass-pill-gradient', label: 'Pill gradient' }
+    ];
+
+    const variableGrid = document.getElementById('variableGrid');
+
+    function buildVarInputs() {
+      variableGrid.innerHTML = '';
+      editableVars.forEach(variable => {
+        const label = document.createElement('label');
+        label.className = 'label';
+        label.textContent = variable.label;
+        label.setAttribute('for', `var-${variable.name}`);
+
+        const input = document.createElement('input');
+        input.className = 'variable-input';
+        input.id = `var-${variable.name}`;
+        input.dataset.cssVar = variable.name;
+        input.addEventListener('input', (event) => {
+          root.style.setProperty(variable.name, event.target.value);
+        });
+
+        variableGrid.appendChild(label);
+        variableGrid.appendChild(input);
+      });
+    }
+
+    function syncVarInputs() {
+      const styles = getComputedStyle(root);
+      document.querySelectorAll('[data-css-var]').forEach(input => {
+        const varName = input.dataset.cssVar;
+        input.value = styles.getPropertyValue(varName).trim();
+      });
+    }
+
+    document.getElementById('resetVars').addEventListener('click', () => {
+      editableVars.forEach(variable => root.style.removeProperty(variable.name));
+      syncVarInputs();
+    });
+
+    document.getElementById('exportVars').addEventListener('click', () => {
+      const lines = editableVars.map(variable => {
+        const input = document.querySelector(`[data-css-var="${variable.name}"]`);
+        return `  ${variable.name}: ${input.value};`;
+      });
+      const css = `:root {\n${lines.join('\n')}\n}`;
+      const blob = new Blob([css], { type: 'text/css' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'shared-ui-overrides.css';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    buildVarInputs();
+    syncVarInputs();
+    setTheme('auto');
+  </script>
+</body>
+</html>
