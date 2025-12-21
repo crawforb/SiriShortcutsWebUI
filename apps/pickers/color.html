@@ -83,13 +83,13 @@
   <div class="bar">
     <div class="barInner">
       <div style="flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 8px 0;">
+        <button class="btn" id="cancel">Cancel</button>
         <div id="selectedColorPreview" class="selectedColorPreview" style="display: none;">
           <div id="bottomColorSwatch" class="selectedColorSwatch"></div>
           <div id="bottomColorInfo" class="selectedColorInfo"></div>
         </div>
         <p class="bottomBarTitle">Colour Picker</p>
       </div>
-      <button class="btn" id="cancel">Cancel</button>
       <button class="btn btnPrimary" id="done" disabled>Done</button>
     </div>
   </div>
@@ -256,7 +256,7 @@
       // Update bottom bar preview
       selectedColorPreview.style.display = 'flex';
       bottomColorSwatch.style.backgroundColor = hex;
-      bottomColorInfo.textContent = `${colorName} - ${shade} - ${hex}`;
+      bottomColorInfo.textContent = `${colorName}`;
 
       doneBtn.disabled = false;
     }
