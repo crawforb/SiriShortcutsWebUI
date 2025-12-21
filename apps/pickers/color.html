@@ -30,76 +30,51 @@
       box-shadow: inset 0 0 0 3px rgba(255,255,255,.9), 0 0 0 3px rgba(255,255,255,.2);
       z-index: 5;
     }
-    .colorLabel {
-      position: absolute;
-      bottom: 2px;
-      left: 0;
-      right: 0;
-      text-align: center;
-      font-size: 7px;
+    .bottomBarTitle {
+      font-size: 17px;
       font-weight: 600;
-      text-shadow: 0 1px 2px rgba(0,0,0,.5);
-      padding: 2px;
-    }
-    .selectedPreview {
-      padding: 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.08);
-      margin-bottom: 12px;
-    }
-    .previewColor {
-      width: 100%;
-      height: 60px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,.16);
-      margin-bottom: 10px;
-    }
-    .searchInput {
-      width: 100%;
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.18);
       color: var(--text);
-      outline: none;
-      margin-bottom: 12px;
+      margin: 0;
+    }
+    .selectedColorPreview {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+    .selectedColorSwatch {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.3);
+      flex-shrink: 0;
+    }
+    .selectedColorInfo {
       font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    /* Override bar styles for larger tappable area */
+    .bar {
+      padding: 12px 12px 12px;
+    }
+    .barInner {
+      padding: 16px;
+      gap: 12px;
+    }
+    .btn {
+      padding: 14px 24px;
+      font-size: 16px;
+      min-width: 100px;
     }
   </style>
 </head>
 <body>
   <div class="shell">
     <div class="sheet">
-      <div class="header">
-        <p class="title">Tailwind Color Picker</p>
-        <p class="sub" id="subline">Returns color data to Shortcuts</p>
-      </div>
-
       <div class="content">
-        <div class="card" style="margin-bottom:12px;">
-          <div class="label">Search Colors</div>
-          <input type="text" id="search" class="searchInput" placeholder="Search color name or hex..." />
-        </div>
-
-        <div class="card" id="previewCard" style="margin-bottom:12px; display:none;">
-          <div class="label">Selected Color</div>
-          <div class="selectedPreview">
-            <div id="previewSwatch" class="previewColor"></div>
-            <div class="small" id="previewInfo">Select a color to see details</div>
-          </div>
-        </div>
-
         <div class="card">
-          <div class="label">Tailwind 2.0 Colors</div>
           <div id="colorCategories"></div>
-        </div>
-
-        <div class="card" style="margin-top:12px;">
-          <div class="label">Notes</div>
-          <div class="small">
-            Tap any color to select it. Returns hex code, RGB, Tailwind class name, and shade info.
-          </div>
         </div>
       </div>
     </div>
@@ -107,8 +82,14 @@
 
   <div class="bar">
     <div class="barInner">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 8px 0;">
+        <div id="selectedColorPreview" class="selectedColorPreview" style="display: none;">
+          <div id="bottomColorSwatch" class="selectedColorSwatch"></div>
+          <div id="bottomColorInfo" class="selectedColorInfo"></div>
+        </div>
+        <p class="bottomBarTitle">Colour Picker</p>
+      </div>
       <button class="btn" id="cancel">Cancel</button>
-      <div style="flex:1;"></div>
       <button class="btn btnPrimary" id="done" disabled>Done</button>
     </div>
   </div>
@@ -120,15 +101,11 @@
     const cb = q("cb", "UI Color Picker");
     const initialColor = q("initial", null);
 
-    const subline = document.getElementById("subline");
-    const previewCard = document.getElementById("previewCard");
-    const previewSwatch = document.getElementById("previewSwatch");
-    const previewInfo = document.getElementById("previewInfo");
     const doneBtn = document.getElementById("done");
-    const searchInput = document.getElementById("search");
     const categoriesContainer = document.getElementById("colorCategories");
-
-    subline.textContent = `Callback: ${cb}   •   rid: ${rid}`;
+    const selectedColorPreview = document.getElementById("selectedColorPreview");
+    const bottomColorSwatch = document.getElementById("bottomColorSwatch");
+    const bottomColorInfo = document.getElementById("bottomColorInfo");
 
     let selectedColor = null;
 
@@ -255,26 +232,6 @@
       } : null;
     }
 
-    function getLabelColor(colorName, shade, shades) {
-      // Map each shade to a contrasting shade (2 steps lighter or darker)
-      const shadeMap = {
-        "50": "300",
-        "100": "300",
-        "200": "400",
-        "300": "500",
-        "400": "600",
-        "500": "300",
-        "600": "400",
-        "700": "500",
-        "800": "600",
-        "900": "700",
-        "950": "700"
-      };
-
-      const contrastShade = shadeMap[shade];
-      return shades[contrastShade] || "#ffffff";
-    }
-
     function selectColor(colorName, shade, hex) {
       // Deselect previous
       document.querySelectorAll('.colorSwatch').forEach(el => {
@@ -296,21 +253,15 @@
         rgb: hexToRgb(hex)
       };
 
-      // Update preview
-      previewCard.style.display = 'block';
-      previewSwatch.style.backgroundColor = hex;
-      const rgb = selectedColor.rgb;
-      previewInfo.innerHTML = `
-        <strong>${colorName} ${shade}</strong><br/>
-        Hex: ${hex}<br/>
-        RGB: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})<br/>
-        Tailwind: ${selectedColor.className}
-      `;
+      // Update bottom bar preview
+      selectedColorPreview.style.display = 'flex';
+      bottomColorSwatch.style.backgroundColor = hex;
+      bottomColorInfo.textContent = `${colorName} - ${shade} - ${hex}`;
 
       doneBtn.disabled = false;
     }
 
-    function renderColors(searchTerm = "") {
+    function renderColors() {
       categoriesContainer.innerHTML = "";
 
       const tones = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "950"];
@@ -320,16 +271,6 @@
       grid.className = 'colorGrid';
 
       Object.entries(tailwindColors).forEach(([colorName, shades]) => {
-        // Check if color matches search
-        const matchesSearch = !searchTerm ||
-          colorName.toLowerCase().includes(searchTerm) ||
-          Object.entries(shades).some(([shade, hex]) =>
-            shade.includes(searchTerm) ||
-            hex.toLowerCase().includes(searchTerm)
-          );
-
-        if (!matchesSearch) return;
-
         // Add all tones for this color as a row
         tones.forEach(tone => {
           const hex = shades[tone];
@@ -340,12 +281,6 @@
           swatch.className = 'colorSwatch';
           swatch.style.backgroundColor = hex;
 
-          const label = document.createElement('div');
-          label.className = 'colorLabel';
-          label.style.color = getLabelColor(colorName, tone, shades);
-          label.textContent = tone;
-          swatch.appendChild(label);
-
           swatch.onclick = () => selectColor(colorName, tone, hex);
           grid.appendChild(swatch);
         });
@@ -353,11 +288,6 @@
 
       categoriesContainer.appendChild(grid);
     }
-
-    searchInput.addEventListener('input', (e) => {
-      const term = e.target.value.toLowerCase().trim();
-      renderColors(term);
-    });
 
     // Initialize
     renderColors();

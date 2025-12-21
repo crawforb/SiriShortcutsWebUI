@@ -14,7 +14,7 @@
 /* Light theme */
 @media (prefers-color-scheme: light) {
   :root {
-    --bg0: #f5f5f7;
+    --bg0: #ffffff;
     --glass: rgba(255,255,255,.85);
     --stroke: rgba(0,0,0,.12);
     --text: rgba(0,0,0,.92);
@@ -25,9 +25,7 @@
   }
 
   body {
-    background: radial-gradient(1200px 900px at 15% 10%, #e8e8ea 0%, transparent 55%),
-                radial-gradient(900px 700px at 80% 30%, #d8d8da 0%, transparent 55%),
-                linear-gradient(180deg, #f5f5f7, #e5e5e7);
+    background: #ffffff;
   }
 
   .glass-card::before {
