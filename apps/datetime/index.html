@@ -2,13 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <!-- Safari specific meta tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="format-detection" content="telephone=no" />
   <!-- Default color (fallback) -->
-  <meta name="theme-color" content="#191919" /> 
+  <meta name="theme-color" content="#191919" />
   <!-- Color for light theme -->
-  <meta name="theme-color" content="#DDDDDD" media="(prefers-color-scheme: light)" /> 
+  <meta name="theme-color" content="#DDDDDD" media="(prefers-color-scheme: light)" />
   <!-- Color for dark theme -->
-  <meta name="theme-color" content="#191919" media="(prefers-color-scheme: dark)" /> 
+  <meta name="theme-color" content="#191919" media="(prefers-color-scheme: dark)" />
   <title>DateTime Picker</title>
   <link rel="stylesheet" href="../../shared/ui.css">
   <style>
@@ -65,6 +69,125 @@
     .view.active {
       display: block;
     }
+
+    /* Back button styles */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      margin-bottom: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(160,160,160,.18);
+      background: rgba(160,160,160,.08);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .back-btn:hover {
+      background: rgba(160,160,160,.15);
+    }
+
+    /* New time picker layout styles */
+    .time-picker-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+    .time-hour-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+    .time-hour-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+    .time-hour-btn {
+      aspect-ratio: 1;
+      border-radius: 12px;
+      border: 1px solid rgba(160,160,160,.18);
+      background: rgba(160,160,160,.08);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .time-hour-btn:hover {
+      background: rgba(160,160,160,.18);
+    }
+    .time-hour-btn.selected {
+      background: #4A90E2;
+      border-color: #4A90E2;
+      color: #fff;
+    }
+    .time-minute-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    .time-minute-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 1px solid rgba(160,160,160,.18);
+      background: rgba(160,160,160,.08);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .time-minute-btn:hover {
+      background: rgba(160,160,160,.18);
+    }
+    .time-minute-btn.selected {
+      background: #4A90E2;
+      border-color: #4A90E2;
+      color: #fff;
+    }
+    .time-period-selector {
+      display: inline-flex;
+      border-radius: 999px;
+      background: rgba(160,160,160,.08);
+      border: 1px solid rgba(160,160,160,.18);
+      overflow: hidden;
+    }
+    .time-period-btn {
+      padding: 10px 24px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .time-period-btn.selected {
+      background: #4A90E2;
+      color: #fff;
+    }
+
+    /* Light theme adjustments for new elements */
+    @media (prefers-color-scheme: light) {
+      .time-hour-btn.selected {
+        background: #0066CC;
+        border-color: #0066CC;
+      }
+      .time-minute-btn.selected {
+        background: #0066CC;
+        border-color: #0066CC;
+      }
+      .time-period-btn.selected {
+        background: #0066CC;
+      }
+    }
   </style>
 </head>
 <body>
@@ -98,16 +221,19 @@
         <!-- Time Selection View -->
         <div class="view" id="view-time">
           <div class="card glass-card">
-          
-            <div class="time-picker-container">
-              <div class="time-circle" id="timeCircle"></div>
-            </div>
+            <button class="back-btn" id="backToDateBtn">
+              <span>&#x2039;</span> Back to Date
+            </button>
+            <div class="time-picker-grid" id="timePickerGrid"></div>
           </div>
         </div>
 
         <!-- Duration Selection View -->
         <div class="view" id="view-duration">
           <div class="card glass-card">
+            <button class="back-btn" id="backToTimeBtn">
+              <span>&#x2039;</span> Back to Time
+            </button>
             <div class="label" style="text-align: center; font-size: 14px;">How long?</div>
             <div class="duration-input-group">
               <input type="number" class="duration-input" id="durationInput" value="30" min="1" max="1440" />
@@ -152,6 +278,29 @@
     const rid = q("rid", crypto.randomUUID());
     const cb = q("cb", "UI DateTime Picker");
     const initialIso = q("initial", null);
+
+    // Calculate and set gradient angle based on aspect ratio
+    function updateGradientAngles() {
+      const cards = document.querySelectorAll('.glass-card, .glass-pill, .btn');
+      cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+        // Calculate angle of diagonal in degrees
+        const angleRad = Math.atan2(height, width);
+        const angleDeg = angleRad * (180 / Math.PI);
+        card.style.setProperty('--gradient-angle', `${angleDeg}deg`);
+      });
+    }
+
+    // Update gradient angles on load and resize
+    window.addEventListener('load', updateGradientAngles);
+    window.addEventListener('resize', updateGradientAngles);
+    // Use ResizeObserver for dynamic content changes
+    const resizeObserver = new ResizeObserver(updateGradientAngles);
+    document.querySelectorAll('.glass-card, .glass-pill').forEach(el => {
+      resizeObserver.observe(el);
+    });
 
     // State
     let currentStep = 0;
@@ -211,8 +360,6 @@
 
       document.getElementById('displayDate').textContent = dateStr;
       document.getElementById('displayTime').textContent = timeStr;
-      document.getElementById('displayDate2').textContent = dateStr;
-      document.getElementById('displayTime2').textContent = timeStr;
     }
 
     function showView(step) {
@@ -320,93 +467,101 @@
       document.getElementById('yearBtn').textContent = calendarYear;
     }
 
-    // Time picker rendering
+    // Time picker rendering with new standard layout
     function renderTimePicker() {
-      const circle = document.getElementById('timeCircle');
-      circle.innerHTML = '';
+      const grid = document.getElementById('timePickerGrid');
+      grid.innerHTML = '';
 
-      const centerX = 50;
-      const centerY = 50;
-      const hourRadius = 38;
+      // Hour buttons - two rows of 6 (1-6, then 7-12)
+      const hourRows = document.createElement('div');
+      hourRows.className = 'time-hour-rows';
 
-      // Hour positions (12, 1, 2, ..., 11)
-      for (let i = 0; i < 12; i++) {
-        const hour = i === 0 ? 12 : i;
-        const angle = (i * 30 - 90) * Math.PI / 180;
-        const x = centerX + hourRadius * Math.cos(angle);
-        const y = centerY + hourRadius * Math.sin(angle);
-
+      // First row: 1-6
+      const row1 = document.createElement('div');
+      row1.className = 'time-hour-row';
+      for (let i = 1; i <= 6; i++) {
         const btn = document.createElement('button');
-        btn.className = 'time-btn hour-btn';
-        btn.textContent = hour;
-        btn.style.left = `${x}%`;
-        btn.style.top = `${y}%`;
-        btn.style.transform = 'translate(-50%, -50%)';
-
-        if (hour === selectedHour) btn.classList.add('selected');
-
+        btn.className = 'time-hour-btn';
+        btn.textContent = i;
+        if (i === selectedHour) btn.classList.add('selected');
         btn.onclick = () => {
-          selectedHour = hour;
+          selectedHour = i;
           renderTimePicker();
           updateDisplay();
         };
-        circle.appendChild(btn);
+        row1.appendChild(btn);
       }
+      hourRows.appendChild(row1);
 
-      // Minute positions (:00, :15, :30, :45) - diamond layout
-      const minutes = [0, 15, 30, 45];
-      const minutePositions = [
-        { x: 50, y: 20 },   // :00 top
-        { x: 72, y: 50 },   // :15 right
-        { x: 50, y: 80 },   // :30 bottom
-        { x: 28, y: 50 }    // :45 left
-      ];
-
-      minutes.forEach((min, i) => {
+      // Second row: 7-12
+      const row2 = document.createElement('div');
+      row2.className = 'time-hour-row';
+      for (let i = 7; i <= 12; i++) {
         const btn = document.createElement('button');
-        btn.className = 'time-btn minute-btn';
+        btn.className = 'time-hour-btn';
+        btn.textContent = i;
+        if (i === selectedHour) btn.classList.add('selected');
+        btn.onclick = () => {
+          selectedHour = i;
+          renderTimePicker();
+          updateDisplay();
+        };
+        row2.appendChild(btn);
+      }
+      hourRows.appendChild(row2);
+      grid.appendChild(hourRows);
+
+      // Minute buttons - four circular buttons (:00, :15, :30, :45)
+      const minuteButtons = document.createElement('div');
+      minuteButtons.className = 'time-minute-buttons';
+      const minutes = [0, 15, 30, 45];
+      minutes.forEach(min => {
+        const btn = document.createElement('button');
+        btn.className = 'time-minute-btn';
         btn.textContent = `:${String(min).padStart(2, '0')}`;
-        btn.style.left = `${minutePositions[i].x}%`;
-        btn.style.top = `${minutePositions[i].y}%`;
-        btn.style.transform = 'translate(-50%, -50%)';
-
         if (min === selectedMinute) btn.classList.add('selected');
-
         btn.onclick = () => {
           selectedMinute = min;
           renderTimePicker();
           updateDisplay();
         };
-        circle.appendChild(btn);
+        minuteButtons.appendChild(btn);
       });
+      grid.appendChild(minuteButtons);
 
-      // AM/PM buttons - positioned at bottom
-      const periods = ['AM', 'PM'];
-      const periodPositions = [
-        { x: 35, y: 95 },   // AM bottom-left
-        { x: 65, y: 95 }    // PM bottom-right
-      ];
+      // AM/PM selector - joined capsule
+      const periodSelector = document.createElement('div');
+      periodSelector.className = 'time-period-selector';
 
-      periods.forEach((period, i) => {
-        const btn = document.createElement('button');
-        btn.className = 'time-btn period-btn';
-        btn.textContent = period;
-        btn.style.left = `${periodPositions[i].x}%`;
-        btn.style.top = `${periodPositions[i].y}%`;
-        btn.style.transform = 'translate(-50%, -50%)';
+      const amBtn = document.createElement('button');
+      amBtn.className = 'time-period-btn';
+      amBtn.textContent = 'AM';
+      if (selectedPeriod === 'AM') amBtn.classList.add('selected');
+      amBtn.onclick = () => {
+        selectedPeriod = 'AM';
+        renderTimePicker();
+        updateDisplay();
+      };
+      periodSelector.appendChild(amBtn);
 
-        if (period === selectedPeriod) btn.classList.add('selected');
+      const pmBtn = document.createElement('button');
+      pmBtn.className = 'time-period-btn';
+      pmBtn.textContent = 'PM';
+      if (selectedPeriod === 'PM') pmBtn.classList.add('selected');
+      pmBtn.onclick = () => {
+        selectedPeriod = 'PM';
+        renderTimePicker();
+        updateDisplay();
+        // Auto-advance to duration picker
+        currentStep = 2;
+        showView(currentStep);
+      };
+      periodSelector.appendChild(pmBtn);
 
-        btn.onclick = () => {
-          selectedPeriod = period;
-          renderTimePicker();
-          updateDisplay();
-          // Auto-advance to duration picker
-          currentStep = 2;
-          showView(currentStep);
-        };
-        circle.appendChild(btn);
-      });
+      grid.appendChild(periodSelector);
+
+      // Update gradient angles for new elements
+      setTimeout(updateGradientAngles, 0);
     }
 
     // Month picker
@@ -488,6 +643,18 @@
         calendarYear++;
       }
       renderCalendar();
+    };
+
+    // Back button handlers
+    document.getElementById('backToDateBtn').onclick = () => {
+      currentStep = 0;
+      showView(currentStep);
+    };
+
+    document.getElementById('backToTimeBtn').onclick = () => {
+      currentStep = 1;
+      showView(currentStep);
+      renderTimePicker();
     };
 
     // Duration tokens

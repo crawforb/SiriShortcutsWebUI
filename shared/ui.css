@@ -6,7 +6,64 @@
   --text: rgba(255,255,255,.92);
   --muted: rgba(255,255,255,.62);
   --shadow: 0 28px 80px rgba(0,0,0,.45), inset 0 1px 0 rgba(160,160,160,.18);
+  --shadow-strong: 0 32px 96px rgba(0,0,0,.65), 0 12px 32px rgba(0,0,0,.45);
+  --shadow-subtle: 0 8px 16px rgba(0,0,0,.15);
   --radius: 22px;
+}
+
+/* Light theme */
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg0: #f5f5f7;
+    --glass: rgba(255,255,255,.85);
+    --stroke: rgba(0,0,0,.12);
+    --text: rgba(0,0,0,.92);
+    --muted: rgba(0,0,0,.55);
+    --shadow: 0 28px 80px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.5);
+    --shadow-strong: 0 32px 96px rgba(0,0,0,.25), 0 12px 32px rgba(0,0,0,.15);
+    --shadow-subtle: 0 4px 12px rgba(0,0,0,.08);
+  }
+
+  body {
+    background: radial-gradient(1200px 900px at 15% 10%, #e8e8ea 0%, transparent 55%),
+                radial-gradient(900px 700px at 80% 30%, #d8d8da 0%, transparent 55%),
+                linear-gradient(180deg, #f5f5f7, #e5e5e7);
+  }
+
+  .glass-card::before {
+    background: linear-gradient(45deg, #ffffff, #00000020, #ffffff) border-box;
+  }
+
+  .glass-pill::before {
+    background: linear-gradient(200deg, #ffffff, #00000020, #ffffff) border-box;
+  }
+
+  .nav-arrow-btn {
+    color: #0066CC;
+  }
+
+  .nav-arrow-btn:hover {
+    background: rgba(0, 102, 204, 0.1);
+  }
+
+  .calendar-day.today {
+    color: #0066CC;
+  }
+
+  .calendar-day.selected {
+    background: #0066CC;
+    color: #fff;
+  }
+
+  .time-btn.selected {
+    background: #0066CC;
+    border-color: #0066CC;
+  }
+
+  .picker-item.selected {
+    background: rgba(0, 102, 204, 0.85);
+    border-color: rgba(0, 102, 204, 1);
+  }
 }
 
 *{ box-sizing:border-box; }
@@ -43,7 +100,7 @@ body{
   position: relative;
   border-radius: 20px;
   background: #00000020;
-  box-shadow: 0 20px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-strong);
   padding: 16px;
   border: none;
 }
@@ -53,11 +110,7 @@ body{
   inset: 0;
   border-radius: 20px;
   padding: 1px;
-  background: linear-gradient(45deg, #000000, #ffffff50, #000000) border-box;
-/*  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;*/
+  background: linear-gradient(var(--gradient-angle, 45deg), #000000, #ffffff50, #000000) border-box;
   mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -70,7 +123,7 @@ body{
   position: relative;
   border-radius: 999px;
   background: #00000020 !important;
-  box-shadow: 0 20px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-subtle);
 }
 .glass-pill::before {
   content: '';
@@ -78,11 +131,7 @@ body{
   inset: 0;
   border-radius: 999px;
   padding: 1px;
-  background: linear-gradient(200deg, #000000, #ffffff50, #000000) border-box;
-  /*-webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;*/
+  background: linear-gradient(var(--gradient-angle, 200deg), #000000, #ffffff50, #000000) border-box;
   mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -134,13 +183,27 @@ input[type="datetime-local"], select{
   justify-content:space-between;
 }
 .btn{
+  position: relative;
   padding: 6px 5px;
   border-radius: 999px;
-  border: 1px solid rgba(160,160,160,.18);
+  border: none;
   background: rgba(160,160,160,.10);
   color: var(--text);
   font-weight:800;
   cursor:pointer;
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  padding: 1px;
+  background: linear-gradient(var(--gradient-angle, 45deg), #00000080, #ffffff30, #00000080) border-box;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
 }
 .btnPrimary{
   background: rgba(160,160,160,.18);
