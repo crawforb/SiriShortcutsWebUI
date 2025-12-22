@@ -120,8 +120,8 @@ body{
 .glass-card {
   position: relative;
   border-radius: 20px;
-  background: var(--glass-strong);
-  box-shadow: var(--shadow-strong);
+  background: var(--glass);
+  box-shadow: var(--shadow);
   padding: 16px;
   margin: 8px; /* gutter so the card doesn't touch frame edges */
   box-sizing: border-box;
