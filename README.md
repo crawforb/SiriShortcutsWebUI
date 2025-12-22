@@ -18,3 +18,20 @@ Features:
 - Search functionality for quick color lookup
 - Returns hex, RGB, and Tailwind class name
 - Visual preview with automatic contrast detection
+
+## Theme / Background variables
+
+The project uses CSS custom properties for theming. The main background variable is `--bg`.
+`--bg` is a solid color: `#323232` for dark mode and `#F2F2F2` for light mode.
+The `--app-bg` variable was removed — backgrounds now use `--bg` directly.
+- To force a theme in the app, set `data-theme` on the `html` element, for example:
+
+```js
+// force light theme
+document.documentElement.setAttribute('data-theme', 'light');
+
+// clear and use system preference
+document.documentElement.removeAttribute('data-theme');
+```
+
+The `apps/` pages were updated to use `--bg` instead of `--app-bg`.

@@ -1,10 +1,7 @@
 /* shared/ui.css */
 :root{
   color-scheme: dark;
-  --bg0: #323232;
-  --app-bg: radial-gradient(1200px 900px at 15% 10%, #2c2f3f 0%, transparent 55%),
-            radial-gradient(900px 700px at 80% 30%, #1f2432 0%, transparent 55%),
-            linear-gradient(180deg, #0a0f1f, #151a26);
+  --bg: #323232;
   --glass: rgba(24,28,40,.62);
   --glass-strong: rgba(18,22,34,.78);
   --glass-soft: rgba(160,160,160,.08);
@@ -27,10 +24,7 @@
 @media (prefers-color-scheme: light) {
   :root {
     color-scheme: light;
-    --bg0: #f2f2f2;
-    --app-bg: radial-gradient(1200px 900px at 15% 10%, #ffffff 0%, transparent 55%),
-              radial-gradient(900px 700px at 80% 30%, #eef1f7 0%, transparent 55%),
-              linear-gradient(180deg, #f6f7fb, #e9edf5);
+    --bg: #f2f2f2;
     --glass: rgba(255,255,255,.78);
     --glass-strong: rgba(255,255,255,.92);
     --glass-soft: rgba(0,0,0,.04);
@@ -51,10 +45,7 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg0: #0a0f1f;
-  --app-bg: radial-gradient(1200px 900px at 15% 10%, #2c2f3f 0%, transparent 55%),
-            radial-gradient(900px 700px at 80% 30%, #1f2432 0%, transparent 55%),
-            linear-gradient(180deg, #0a0f1f, #151a26);
+  --bg: #323232;
   --glass: rgba(24,28,40,.62);
   --glass-strong: rgba(18,22,34,.78);
   --glass-soft: rgba(160,160,160,.08);
@@ -74,10 +65,7 @@
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg0: #f6f7fb;
-  --app-bg: radial-gradient(1200px 900px at 15% 10%, #ffffff 0%, transparent 55%),
-            radial-gradient(900px 700px at 80% 30%, #eef1f7 0%, transparent 55%),
-            linear-gradient(180deg, #f6f7fb, #e9edf5);
+  --bg: #f2f2f2;
   --glass: rgba(255,255,255,.78);
   --glass-strong: rgba(255,255,255,.92);
   --glass-soft: rgba(0,0,0,.04);
@@ -98,8 +86,7 @@
 *{ box-sizing:border-box; }
 html,body{ height:100%; margin:0; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui; color:var(--text); }
 body{
-  background: var(--app-bg);
-  background-color: var(--bg0);
+  background: var(--bg);
 }
 
 .shell{ padding:12px; max-width:560px; margin:0 auto; }
@@ -195,6 +182,26 @@ input[type="datetime-local"], select{
   cursor:pointer;
   user-select:none;
 }
+
+/* Small color swatch used across apps */
+.swatch{
+  display:inline-block;
+  width:14px;
+  height:14px;
+  border-radius:4px;
+  margin-left:8px;
+  vertical-align:middle;
+  border:1px solid rgba(0,0,0,.08);
+}
+
+/* Single margin utilities for consistency across apps */
+.mt { margin-top: 12px !important; }
+.ml { margin-left: 12px !important; }
+.mr { margin-right: 12px !important; }
+.mx { margin-left: 12px !important; margin-right: 12px !important; }
+
+/* Single padding utility for consistent internal spacing */
+.p { padding: 12px !important; }
 
 .bar{
   padding-bottom: calc(6px + env(safe-area-inset-bottom));

@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="../../shared/ui.css">
   <style>
     :root, html, body { height: 100%; }
-    html { background-color: var(--bg0); }
+    html { background-color: var(--bg); }
     body{
       margin:0;
       min-height:100%;
@@ -23,36 +23,25 @@
       justify-content:center;
       -webkit-font-smoothing:antialiased;
       padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-      background: var(--app-bg);
-      background-color: var(--bg0);
+      background: var(--bg);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
     }
-    .info{
-      background: transparent;
-      border-radius: 12px;
-      padding: 12px 14px;
-      color: var(--text);
-      border: 1px solid var(--stroke);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      font-size:13px;
-      text-align:center;
-    }
-    .swatch{ display:inline-block; width:14px; height:14px; border-radius:4px; margin-left:8px; vertical-align:middle; border:1px solid rgba(0,0,0,.08); }
+    /* Use shared .glass-card styles from shared/ui.css for the main panel */
+    /* use shared .swatch from shared/ui.css */
   </style>
 </head>
 <body>
-  <div class="info" id="info">
+  <div class="glass-card" id="info">
     <div>Safari WebView Theme Test</div>
-    <div style="margin-top:8px;">bg: <span id="bgval">--</span> <span id="bgsw" class="swatch"></span></div>
-    <div style="margin-top:6px;">text: <span id="textval">--</span> <span id="textsw" class="swatch"></span></div>
+    <div class="mt">bg: <span id="bgval">--</span> <span id="bgsw" class="swatch"></span></div>
+    <div class="mt">text: <span id="textval">--</span> <span id="textsw" class="swatch"></span></div>
   </div>
 
   <script>
     function updateThemeMetaAndColors(){
       const s = getComputedStyle(document.documentElement);
-      const bg = s.getPropertyValue('--bg0').trim() || '#ffffff';
+      const bg = s.getPropertyValue('--bg').trim() || '#ffffff';
       const text = s.getPropertyValue('--text').trim() || '#000000';
 
       // Update page colors to ensure seamless background
