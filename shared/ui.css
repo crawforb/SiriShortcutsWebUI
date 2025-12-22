@@ -1,7 +1,7 @@
 /* shared/ui.css */
 :root{
   color-scheme: dark;
-  --bg0: #0a0f1f;
+  --bg0: #323232;
   --app-bg: radial-gradient(1200px 900px at 15% 10%, #2c2f3f 0%, transparent 55%),
             radial-gradient(900px 700px at 80% 30%, #1f2432 0%, transparent 55%),
             linear-gradient(180deg, #0a0f1f, #151a26);
@@ -27,7 +27,7 @@
 @media (prefers-color-scheme: light) {
   :root {
     color-scheme: light;
-    --bg0: #f6f7fb;
+    --bg0: #f2f2f2;
     --app-bg: radial-gradient(1200px 900px at 15% 10%, #ffffff 0%, transparent 55%),
               radial-gradient(900px 700px at 80% 30%, #eef1f7 0%, transparent 55%),
               linear-gradient(180deg, #f6f7fb, #e9edf5);
