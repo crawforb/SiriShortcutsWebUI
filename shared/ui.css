@@ -46,8 +46,8 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
   --bg: #323232;
-  --glass: rgba(24,28,40,.62);
-  --glass-strong: rgba(18,22,34,.78);
+  --glass: rgba(24,24,24,.62);
+  --glass-strong: rgba(18,18,18,.78);
   --glass-soft: rgba(160,160,160,.08);
   --stroke: rgba(255,255,255,.16);
   --stroke-strong: rgba(255,255,255,.28);
