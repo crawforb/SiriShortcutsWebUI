@@ -2,8 +2,8 @@
 :root{
   color-scheme: dark;
   --bg: #323232;
-  --glass: rgba(24,28,40,.62);
-  --glass-strong: rgba(18,22,34,.78);
+  --glass: rgba(24,24,24,.62);
+  --glass-strong: rgba(18,18,18,.78);
   --glass-soft: rgba(160,160,160,.08);
   --stroke: rgba(255,255,255,.16);
   --stroke-strong: rgba(255,255,255,.28);
@@ -595,4 +595,32 @@ input[type="datetime-local"], select{
 .text-muted { color: var(--muted); }
 .caps { text-transform: uppercase; letter-spacing: 1px; }
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Page / layout utilities */
+/* Use on pages that should stack cards and keep safe margins */
+.stacked-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 18px;
+  min-height: 100%;
+}
+
+/* Constrain glass-cards so they never touch the frame edge when used inside stacked layouts */
+.stacked-page .glass-card,
+.glass-card.constrain {
+  width: min(560px, calc(100% - 48px));
+  box-sizing: border-box;
+  margin: 8px 0;
+  display: block;
+}
+
+/* Provide a lightweight truncate utility that allows multi-line truncation when needed */
+.truncate-multiline {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 

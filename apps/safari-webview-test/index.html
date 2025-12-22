@@ -18,20 +18,15 @@
     body{
       margin:0;
       min-height:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
       -webkit-font-smoothing:antialiased;
       padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
       background: var(--bg);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
     }
-    /* Use shared .glass-card styles from shared/ui.css for the main panel */
-    /* use shared .swatch from shared/ui.css */
   </style>
 </head>
-<body>
+<body class="stacked-page">
   <div class="glass-card" id="info">
     <div>Safari WebView Theme Test</div>
     <div class="mt">bg: <span id="bgval">--</span> <span id="bgsw" class="swatch"></span></div>
