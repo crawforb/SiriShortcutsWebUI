@@ -1,10 +1,8 @@
 /* shared/ui.css */
 :root{
   color-scheme: dark;
-  --bg0: #0a0f1f;
-  --app-bg: radial-gradient(1200px 900px at 15% 10%, #2c2f3f 0%, transparent 55%),
-            radial-gradient(900px 700px at 80% 30%, #1f2432 0%, transparent 55%),
-            linear-gradient(180deg, #0a0f1f, #151a26);
+  --bg0: #191919;
+  --app-bg: #191919;
   --glass: rgba(24,28,40,.62);
   --glass-strong: rgba(18,22,34,.78);
   --glass-soft: rgba(160,160,160,.08);
@@ -27,20 +25,18 @@
 @media (prefers-color-scheme: light) {
   :root {
     color-scheme: light;
-    --bg0: #f6f7fb;
-    --app-bg: radial-gradient(1200px 900px at 15% 10%, #ffffff 0%, transparent 55%),
-              radial-gradient(900px 700px at 80% 30%, #eef1f7 0%, transparent 55%),
-              linear-gradient(180deg, #f6f7fb, #e9edf5);
-    --glass: rgba(255,255,255,.78);
-    --glass-strong: rgba(255,255,255,.92);
-    --glass-soft: rgba(0,0,0,.04);
-    --stroke: rgba(0,0,0,.12);
-    --stroke-strong: rgba(0,0,0,.2);
-    --text: rgba(0,0,0,.92);
-    --muted: rgba(0,0,0,.55);
-    --shadow: 0 28px 80px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.6);
-    --shadow-strong: 0 32px 96px rgba(0,0,0,.2), 0 12px 32px rgba(0,0,0,.12);
-    --shadow-subtle: 0 4px 12px rgba(0,0,0,.08);
+    --bg0: #f2f2f2;
+    --app-bg: #f2f2f2;
+    --glass: rgba(20,20,20,.72);
+    --glass-strong: rgba(12,12,12,.82);
+    --glass-soft: rgba(255,255,255,.08);
+    --stroke: rgba(255,255,255,.18);
+    --stroke-strong: rgba(255,255,255,.3);
+    --text: rgba(255,255,255,.92);
+    --muted: rgba(255,255,255,.65);
+    --shadow: 0 28px 80px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.35);
+    --shadow-strong: 0 32px 96px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.2);
+    --shadow-subtle: 0 6px 16px rgba(0,0,0,.18);
     --accent: #0066CC;
     --accent-strong: #0066CC;
     --overlay: rgba(0,0,0,.3);
@@ -51,10 +47,8 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg0: #0a0f1f;
-  --app-bg: radial-gradient(1200px 900px at 15% 10%, #2c2f3f 0%, transparent 55%),
-            radial-gradient(900px 700px at 80% 30%, #1f2432 0%, transparent 55%),
-            linear-gradient(180deg, #0a0f1f, #151a26);
+  --bg0: #191919;
+  --app-bg: #191919;
   --glass: rgba(24,28,40,.62);
   --glass-strong: rgba(18,22,34,.78);
   --glass-soft: rgba(160,160,160,.08);
@@ -74,20 +68,18 @@
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg0: #f6f7fb;
-  --app-bg: radial-gradient(1200px 900px at 15% 10%, #ffffff 0%, transparent 55%),
-            radial-gradient(900px 700px at 80% 30%, #eef1f7 0%, transparent 55%),
-            linear-gradient(180deg, #f6f7fb, #e9edf5);
-  --glass: rgba(255,255,255,.78);
-  --glass-strong: rgba(255,255,255,.92);
-  --glass-soft: rgba(0,0,0,.04);
-  --stroke: rgba(0,0,0,.12);
-  --stroke-strong: rgba(0,0,0,.2);
-  --text: rgba(0,0,0,.92);
-  --muted: rgba(0,0,0,.55);
-  --shadow: 0 28px 80px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.6);
-  --shadow-strong: 0 32px 96px rgba(0,0,0,.2), 0 12px 32px rgba(0,0,0,.12);
-  --shadow-subtle: 0 4px 12px rgba(0,0,0,.08);
+  --bg0: #f2f2f2;
+  --app-bg: #f2f2f2;
+  --glass: rgba(20,20,20,.72);
+  --glass-strong: rgba(12,12,12,.82);
+  --glass-soft: rgba(255,255,255,.08);
+  --stroke: rgba(255,255,255,.18);
+  --stroke-strong: rgba(255,255,255,.3);
+  --text: rgba(255,255,255,.92);
+  --muted: rgba(255,255,255,.65);
+  --shadow: 0 28px 80px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.35);
+  --shadow-strong: 0 32px 96px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.2);
+  --shadow-subtle: 0 6px 16px rgba(0,0,0,.18);
   --accent: #0066CC;
   --accent-strong: #0066CC;
   --overlay: rgba(0,0,0,.3);

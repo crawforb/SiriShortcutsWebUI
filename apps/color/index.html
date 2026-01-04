@@ -16,8 +16,8 @@
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="mobile-web-app-title" content="Colour Picker"/>
   
-  <meta name="theme-color" content="#FFFF00" media="(prefers-color-scheme: light)"/>
-  <meta name="theme-color" content="#0000FF" media="(prefers-color-scheme: dark)"/>
+  <meta name="theme-color" content="#F2F2F2" media="(prefers-color-scheme: light)"/>
+  <meta name="theme-color" content="#191919" media="(prefers-color-scheme: dark)"/>
   
   <title>Colour Picker</title>
   <link rel="stylesheet" href="../../shared/ui.css">
@@ -28,6 +28,9 @@
       gap: 0;
       margin-bottom: 12px;
       overflow-x: auto;
+    }
+    .colorGrid + .colorGrid {
+      margin-top: 8px;
     }
     .colorSwatch {
       aspect-ratio: 1;
@@ -71,9 +74,17 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    body.color-picker {
+      padding-bottom: calc(116px + env(safe-area-inset-bottom));
+    }
     /* Override bar styles for larger tappable area */
     .bar {
-      padding: 12px 12px 12px;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 20;
+      padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
     }
     .barInner {
       padding: 14px;
@@ -87,7 +98,7 @@
     }
   </style>
 </head>
-<body>
+<body class="color-picker">
   <div class="shell">
     <div class="sheet">
       <div class="content">
@@ -280,27 +291,36 @@
 
       const tones = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "950"];
 
-      // Create single grid
-      const grid = document.createElement('div');
-      grid.className = 'colorGrid';
+      const greyNames = ["Slate", "Gray", "Zinc", "Neutral", "Stone"];
+      const colorNames = Object.keys(tailwindColors).filter(name => !greyNames.includes(name));
 
-      Object.entries(tailwindColors).forEach(([colorName, shades]) => {
-        // Add all tones for this color as a row
-        tones.forEach(tone => {
-          const hex = shades[tone];
-          if (!hex) return;
+      const buildGrid = (names) => {
+        const grid = document.createElement('div');
+        grid.className = 'colorGrid';
 
-          const swatch = document.createElement('div');
-          swatch.id = `swatch-${colorName}-${tone}`;
-          swatch.className = 'colorSwatch';
-          swatch.style.backgroundColor = hex;
+        names.forEach(colorName => {
+          const shades = tailwindColors[colorName];
+          if (!shades) return;
 
-          swatch.onclick = () => selectColor(colorName, tone, hex);
-          grid.appendChild(swatch);
+          tones.forEach(tone => {
+            const hex = shades[tone];
+            if (!hex) return;
+
+            const swatch = document.createElement('div');
+            swatch.id = `swatch-${colorName}-${tone}`;
+            swatch.className = 'colorSwatch';
+            swatch.style.backgroundColor = hex;
+
+            swatch.onclick = () => selectColor(colorName, tone, hex);
+            grid.appendChild(swatch);
+          });
         });
-      });
 
-      categoriesContainer.appendChild(grid);
+        return grid;
+      };
+
+      categoriesContainer.appendChild(buildGrid(colorNames));
+      categoriesContainer.appendChild(buildGrid(greyNames));
     }
 
     // Initialize
