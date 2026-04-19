@@ -24,8 +24,8 @@
 @media (prefers-color-scheme: light) {
   :root {
     color-scheme: light;
-    --bg: #f2f2f2;
-    --glass: rgba(255,255,255,.78);
+    --bg: #e5e5e5;
+    --glass: rgba(255,255,255,.55);
     --glass-strong: rgba(255,255,255,.92);
     --glass-soft: rgba(0,0,0,.04);
     --stroke: rgba(0,0,0,.12);
@@ -65,8 +65,8 @@
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #f2f2f2;
-  --glass: rgba(255,255,255,.78);
+  --bg: #e5e5e5;
+  --glass: rgba(255,255,255,.55);
   --glass-strong: rgba(255,255,255,.92);
   --glass-soft: rgba(0,0,0,.04);
   --stroke: rgba(0,0,0,.12);
@@ -79,7 +79,7 @@
   --accent: #9a9a9a;
   --accent-strong: #9a9a9a;
   --overlay: rgba(0,0,0,.3);
-  --glass-gradient: linear-gradient(var(--gradient-angle, 45deg), rgba(255,255,255,.9), rgba(0,0,0,.12), rgba(255,255,255,.9));
+  --glass-gradient: linear-gradient(var(--gradient-angle, 45deg), rgba(0,0,0,.12), rgba(255,255,255,.9), rgba(0,0,0,.12));
   --glass-pill-gradient: linear-gradient(var(--gradient-angle, 200deg), rgba(255,255,255,.9), rgba(0,0,0,.12), rgba(255,255,255,.9));
 }
 
@@ -121,7 +121,7 @@ body{
   position: relative;
   border-radius: 20px;
   background: var(--glass);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-subtle);
   padding: 16px;
   margin: 8px; /* gutter so the card doesn't touch frame edges */
   box-sizing: border-box;
